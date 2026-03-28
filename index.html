@@ -1661,40 +1661,12 @@ document.getElementById('share-copy').addEventListener('click', () => {
 // ════════════════════════════════════════════════════
 //  LEADERBOARD
 // ════════════════════════════════════════════════════
-function seededRng(seed) {
-  let s = seed >>> 0;
-  return () => { s = Math.imul(1664525, s) + 1013904223 >>> 0; return s / 0x100000000; };
-}
-
-function genLeaderboard(mode) {
-  const rng = seededRng(mode === 'easy' ? 0xDEAD : 0xBEEF);
-  const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
-  const vowels = 'AEIOU';
-  const entries = [];
-  const count = 60;
-  for (let i = 0; i < count; i++) {
-    const c1 = consonants[Math.floor(rng() * consonants.length)];
-    const v1 = vowels[Math.floor(rng() * vowels.length)];
-    const c2 = consonants[Math.floor(rng() * consonants.length)];
-    const initials = c1 + v1 + c2;
-    const baseScore = Math.max(0, 50 - i * 0.28 - rng() * 0.4);
-    entries.push({ initials, score: parseFloat(baseScore.toFixed(2)), fake: true });
-  }
-  return entries;
-}
-
-const lbData = {
-  easy: genLeaderboard('easy'),
-  hard: genLeaderboard('hard'),
-};
-
 function getLbEntries(tab) {
   const key = `lb-scores-${tab}`;
-  let userScores = [];
-  try { userScores = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
-  const all = [...lbData[tab], ...userScores];
-  all.sort((a, b) => b.score - a.score);
-  return all;
+  let scores = [];
+  try { scores = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+  scores.sort((a, b) => b.score - a.score);
+  return scores;
 }
 
 let lbCurrentTab = 'easy';
@@ -1704,10 +1676,17 @@ function renderLeaderboard(tab) {
   const entries = getLbEntries(tab);
   const listEl = document.getElementById('lb-list');
   const subtitleEl = document.getElementById('lb-subtitle');
-  const totalCount = entries.length + Math.floor(entries.length * 53.4);
-  subtitleEl.textContent = `${(totalCount * 1000).toLocaleString()} scores submitted`;
+  subtitleEl.textContent = entries.length === 0
+    ? 'No scores yet — be the first!'
+    : `${entries.length} score${entries.length === 1 ? '' : 's'} submitted`;
 
   listEl.innerHTML = '';
+  if (entries.length === 0) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'padding: 40px 22px; color: rgba(255,255,255,0.25); font-size: 13px; letter-spacing: -0.13px;';
+    empty.textContent = 'Play a game and post your score to appear here.';
+    listEl.appendChild(empty);
+  }
   let rank = 1;
   for (let i = 0; i < entries.length; i++) {
     const e = entries[i];
