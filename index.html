@@ -1626,7 +1626,9 @@ function startPicker() {
     b: randInt(30, 80),
   };
 
-  document.getElementById('picker-round').textContent = `${round} / ${TOTAL_ROUNDS}`;
+  document.getElementById('picker-round').textContent = multiMode
+    ? `${mpPlayers[mpCurrentPlayer].name}  ·  ${round} / ${TOTAL_ROUNDS}`
+    : `${round} / ${TOTAL_ROUNDS}`;
   updatePicker();
   showScreen('picker-screen');
 
@@ -1726,7 +1728,9 @@ function showResult() {
   document.querySelector('.score-int').textContent = si;
   document.querySelector('.score-dec').textContent = sd;
   document.getElementById('result-feedback').textContent = scoreFeedback(score);
-  document.getElementById('result-round').textContent    = `${round} / ${TOTAL_ROUNDS}`;
+  document.getElementById('result-round').textContent    = multiMode
+    ? `${mpPlayers[mpCurrentPlayer].name}  ·  ${round} / ${TOTAL_ROUNDS}`
+    : `${round} / ${TOTAL_ROUNDS}`;
 
   // Text color for each half
   const setHalfColor = (halfId, h, s, b) => {
