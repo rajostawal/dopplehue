@@ -711,9 +711,55 @@
       color: #ffd60a;
     }
 
+    /* ── Mobile brand (hidden on desktop) ── */
+    #mobile-brand {
+      display: none;
+      position: absolute;
+      top: 20px;
+      left: 22px;
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: -0.3px;
+      z-index: 200;
+      pointer-events: none;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 520px) {
-      #game-container { width: 100vw; border-radius: 0; }
+      body { align-items: flex-start; }
+
+      #page-brand, #page-version, #page-mute, #page-theme { display: none; }
+
+      #mobile-brand { display: block; }
+
+      #game-container {
+        width: 100vw;
+        height: 100svh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      /* Intro fills full screen height on mobile */
+      #intro-screen {
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-bottom: env(safe-area-inset-bottom, 16px);
+      }
+
+      /* Push content down to make room for mobile brand */
+      #intro-title { margin-top: 72px; }
+
+      #intro-body { max-width: 100%; margin-right: 22px; }
+
+      .intro-mode-btns { margin-bottom: 16px; flex-wrap: wrap; }
+
+      #intro-credit { padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)); }
+
+      /* Game screens fill full height */
+      .screen:not(#intro-screen) { height: 100svh; }
     }
   </style>
 </head>
@@ -723,6 +769,9 @@
 <div id="page-version">DoppleHue v1.0</div>
 
 <div id="game-container">
+
+  <!-- Mobile-only brand overlay -->
+  <div id="mobile-brand">DoppleHue.</div>
 
   <!-- ══════════════════ INTRO ══════════════════ -->
   <div class="screen active" id="intro-screen">
@@ -973,7 +1022,7 @@ function showIntro() {
   const introEl = document.getElementById('intro-screen');
   introEl.style.position = '';
   introEl.style.inset = '';
-  document.getElementById('game-container').style.height = '';
+  if (window.innerWidth > 520) document.getElementById('game-container').style.height = '';
   showScreen('intro-screen');
   modeLabel.textContent = 'Solo or multiplayer?';
 }
@@ -1014,7 +1063,7 @@ function startCountdown() {
   const introEl = document.getElementById('intro-screen');
   introEl.style.position = 'absolute';
   introEl.style.inset = '0';
-  document.getElementById('game-container').style.height = '390px';
+  if (window.innerWidth > 520) document.getElementById('game-container').style.height = '390px';
   showScreen('countdown-screen');
   showWord();
 }
@@ -1368,7 +1417,7 @@ function renderLeaderboard(tab) {
 }
 
 document.getElementById('intro-lb-btn').addEventListener('click', () => {
-  document.getElementById('game-container').style.height = '440px';
+  if (window.innerWidth > 520) document.getElementById('game-container').style.height = '440px';
   renderLeaderboard('easy');
   showScreen('leaderboard-screen');
 });
