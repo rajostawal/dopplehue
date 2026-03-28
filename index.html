@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Game — How Well Can You Remember Colors?</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #fff;
+      font-family: -apple-system, "Inter", system-ui, sans-serif;
+      font-weight: 500;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Page chrome ── */
+    #page-brand {
+      position: fixed;
+      top: 22px;
+      left: 24px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #000;
+      letter-spacing: -0.3px;
+      z-index: 100;
+    }
+    #page-version {
+      position: fixed;
+      bottom: 22px;
+      left: 24px;
+      font-size: 12px;
+      color: #999;
+      z-index: 100;
+    }
+    #page-mute {
+      position: fixed;
+      bottom: 16px;
+      right: 64px;
+      z-index: 100;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      opacity: 0.4;
+    }
+    #page-mute svg { width: 22px; height: 22px; display: block; }
+
+    /* ════════════════════════════════════════
+       GAME CONTAINER
+    ════════════════════════════════════════ */
+    #game-container {
+      position: relative;
+      width: 476px;
+      height: auto;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: rgba(0,0,0,0.35) 0 4px 16px, rgba(0,0,0,0.17) 0 34px 44px;
+      transition: height 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ════════════════════════════════════════
+       SCREENS
+    ════════════════════════════════════════ */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .screen.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Intro overrides — flows naturally so container auto-sizes */
+    #intro-screen {
+      position: relative;
+      inset: auto;
+      opacity: 1;
+      pointer-events: all;
+      transition: none;
+    }
+    #intro-screen:not(.active) {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      transition: opacity 0.4s;
+    }
+
+    /* ── Round indicator ── */
+    .round-indicator {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      z-index: 10;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 19px;
+      letter-spacing: 1.92px;
+      color: #fff;
+      user-select: none;
+    }
+
+    /* ── Go button (submit/next) ── */
+    .go-btn {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      z-index: 10;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s;
+      flex-shrink: 0;
+    }
+    .go-btn:hover { transform: scale(1.02); }
+    .go-btn:active { transform: scale(0.97); }
+    .go-btn svg { width: 24px; height: 24px; }
+
+    /* ════════════════════════════════════════
+       INTRO SCREEN
+    ════════════════════════════════════════ */
+    #intro-screen { background: #000; justify-content: flex-start; padding: 0; }
+
+    #intro-title {
+      font-size: min(92px, 22vw);
+      font-weight: 500;
+      letter-spacing: -5.52px;
+      line-height: 1;
+      color: #fff;
+      margin: 30px 0 0 30px;
+    }
+
+    #intro-body {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      color: rgb(173,173,173);
+      margin: 14px 30px 0;
+      max-width: 338px;
+    }
+    #intro-body p { margin-bottom: 12px; }
+    #intro-body p:last-child { margin-bottom: 0; }
+
+    #intro-mode-label {
+      margin: 12px 0 0;
+      font-size: 14px;
+      letter-spacing: -0.14px;
+      color: #fff;
+    }
+
+    .intro-mode-btns {
+      margin: 16px 22px 0;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .intro-mode-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      transition: transform 0.15s, background 0.3s;
+      flex-shrink: 0;
+    }
+    .intro-mode-btn svg { width: 26px; height: 26px; }
+    .intro-mode-btn:hover { transform: scale(1.04); }
+    .intro-mode-btn:active { transform: scale(0.94) !important; }
+
+    /* Solo button rainbow on active */
+    .intro-mode-btn.solo-active {
+      background: conic-gradient(from 0deg, #ff6b6b, #ffa07a, #ffd700, #90ee90, #87ceeb, #9b59b6, #ff6b6b);
+      color: #fff;
+    }
+    .intro-mode-btn.solo-active svg { stroke: #fff; }
+
+    /* Mode toggle (Easy/Hard) */
+    .mode-toggle {
+      position: static;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.55);
+      font-size: 21px;
+      font-weight: 500;
+      letter-spacing: -0.42px;
+      min-height: 64px;
+      padding: 0 4px;
+      transition: color 0.2s;
+    }
+    .mode-toggle svg { width: 36px; height: 36px; flex-shrink: 0; }
+    .mode-toggle:hover { color: rgba(255,255,255,0.8); }
+    /* Animate toggle knob: easy = right side (default), hard = left side */
+    .mode-toggle svg .toggle-knob { transition: transform 0.2s; transform-origin: center; transform-box: fill-box; }
+    .mode-toggle svg.hard-mode .toggle-knob { transform: translateX(-8px); }
+
+    /* Credit */
+    #intro-credit {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px 20px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      letter-spacing: -0.24px;
+    }
+
+    /* ════════════════════════════════════════
+       COUNTDOWN SCREEN
+    ════════════════════════════════════════ */
+    #countdown-screen {
+      padding: 0;
+      background: #000;
+      transition: background-color 0.45s;
+    }
+
+    #countdown-word {
+      position: absolute;
+      right: 16px;
+      top: 6px;
+      font-size: min(92px, 18vw);
+      font-weight: 500;
+      letter-spacing: -2.76px;
+      line-height: 1;
+      text-align: right;
+      transition: opacity 0.15s;
+      color: #fff;
+    }
+
+    /* ════════════════════════════════════════
+       MEMORIZE SCREEN
+    ════════════════════════════════════════ */
+    #memorize-screen { padding: 0; }
+
+    #memorize-color {
+      position: absolute;
+      inset: 0;
+    }
+
+    #timer-value {
+      position: absolute;
+      right: 16px;
+      top: 6px;
+      z-index: 2;
+      font-size: min(92px, 18vw);
+      font-weight: 500;
+      letter-spacing: -2.76px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      text-align: right;
+      color: rgba(255,255,255,0.7);
+      pointer-events: none;
+    }
+    #timer-dec { font-size: 0.55em; vertical-align: top; margin-top: 0.12em; }
+
+    #timer-label {
+      position: absolute;
+      right: 16px;
+      top: min(92px, 18vw);
+      z-index: 2;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 19px;
+      letter-spacing: -0.24px;
+      text-align: right;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ════════════════════════════════════════
+       PICKER SCREEN
+    ════════════════════════════════════════ */
+    #picker-screen { padding: 0; }
+
+    #picker-bg {
+      position: absolute;
+      inset: 0;
+      transition: background 0.08s;
+    }
+
+    .strip-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      z-index: 5;
+      display: flex;
+      opacity: 0;
+      transform: translateX(-100%);
+      transition: opacity 0.5s ease-out 0.05s, transform 0.55s cubic-bezier(0.25,0.1,0.25,1) 0.05s;
+    }
+    #picker-screen.active .strip-container {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .strip {
+      flex: 1;
+      position: relative;
+      cursor: pointer;
+      border-right: 1px solid rgba(0,0,0,0.08);
+      touch-action: none;
+    }
+
+    .strip-handle {
+      position: absolute;
+      left: 50%;
+      width: 25px;
+      height: 25px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: #fff;
+      border: none;
+      box-shadow: rgba(0,0,0,0.2) 0 1px 4px;
+      cursor: grab;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .strip-handle:active { cursor: grabbing; }
+
+    #picker-label {
+      position: absolute;
+      left: 143px;
+      bottom: 62px;
+      z-index: 5;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 19px;
+      letter-spacing: -0.24px;
+      opacity: 0.5;
+      transition: color 0.15s;
+      color: #fff;
+    }
+    #picker-values {
+      position: absolute;
+      left: 143px;
+      bottom: 44px;
+      z-index: 5;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 19px;
+      letter-spacing: -0.24px;
+      transition: color 0.15s;
+      color: #fff;
+    }
+    #picker-round { left: 143px; }
+
+    #picker-info {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.35s 0.25s, transform 0.35s 0.25s;
+    }
+    #picker-screen.active #picker-info {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ════════════════════════════════════════
+       RESULT SCREEN
+    ════════════════════════════════════════ */
+    #result-screen { padding: 0; }
+
+    .result-half {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 30px 14px;
+    }
+
+    .result-label {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 19px;
+      letter-spacing: -0.24px;
+      opacity: 0.5;
+      color: #fff;
+    }
+    .result-hsb {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 19px;
+      letter-spacing: -0.24px;
+      color: #fff;
+    }
+
+    #result-score {
+      position: absolute;
+      right: 30px;
+      top: 30px;
+      z-index: 5;
+      font-size: min(92px, 18vw);
+      font-weight: 500;
+      letter-spacing: -2.76px;
+      line-height: 1;
+      text-align: right;
+      color: #fff;
+    }
+    #result-feedback {
+      position: absolute;
+      right: 30px;
+      top: calc(34px + min(92px, 18vw));
+      z-index: 5;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: -0.36px;
+      text-align: right;
+      max-width: min(340px, 75vw);
+      text-wrap: balance;
+      color: #fff;
+    }
+
+    /* ════════════════════════════════════════
+       TOTAL SCREEN
+    ════════════════════════════════════════ */
+    #total-screen { background: #111; padding: 0; }
+
+    #total-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: rgba(255,255,255,0.7);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: background 0.15s;
+    }
+    #total-close:hover { background: rgba(255,255,255,0.2); }
+
+    #total-percentile {
+      position: absolute;
+      top: 22px;
+      left: 22px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: -0.13px;
+    }
+    #total-percentile span { color: #ffd60a; }
+
+    #total-score-wrap {
+      position: absolute;
+      top: 42px;
+      left: 22px;
+      font-size: min(72px, 15vw);
+      font-weight: 500;
+      letter-spacing: -4px;
+      line-height: 1;
+      color: #fff;
+    }
+    #total-score-denom { color: rgba(255,255,255,0.25); }
+
+    #total-description {
+      position: absolute;
+      top: 128px;
+      left: 22px;
+      right: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: -0.13px;
+    }
+
+    #total-tiles {
+      position: absolute;
+      bottom: 76px;
+      left: 22px;
+      right: 22px;
+      display: flex;
+      gap: 5px;
+      height: 76px;
+    }
+    .total-tile {
+      flex: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    .total-tile-score {
+      position: absolute;
+      top: 6px;
+      left: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      z-index: 2;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+
+    #total-actions {
+      position: absolute;
+      bottom: 22px;
+      left: 22px;
+      right: 22px;
+      display: flex;
+      gap: 8px;
+    }
+    #total-initials-btn {
+      width: 72px;
+      height: 44px;
+      border-radius: 58px;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    #total-initials-btn:hover { background: rgba(255,255,255,0.14); }
+    #total-post-btn {
+      flex: 1;
+      height: 44px;
+      border-radius: 58px;
+      background: #fff;
+      border: none;
+      color: #000;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -0.26px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    #total-post-btn:hover { transform: scale(1.01); }
+    #total-post-btn:active { transform: scale(0.98); }
+
+    #intro-lb-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.4);
+      margin-left: auto;
+      transition: color 0.15s;
+    }
+    #intro-lb-btn:hover { color: rgba(255,255,255,0.8); }
+    #intro-lb-btn svg { width: 20px; height: 20px; }
+
+    /* ════════════════════════════════════════
+       LEADERBOARD SCREEN
+    ════════════════════════════════════════ */
+    #leaderboard-screen {
+      background: #111;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #lb-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: background 0.15s;
+    }
+    #lb-close:hover { background: rgba(255,255,255,0.2); }
+
+    #lb-title {
+      font-size: 46px;
+      font-weight: 600;
+      letter-spacing: -2px;
+      line-height: 1;
+      color: #fff;
+      margin: 22px 0 0 22px;
+    }
+
+    #lb-subtitle {
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+      margin: 4px 0 0 22px;
+      letter-spacing: -0.13px;
+    }
+
+    #lb-tabs {
+      display: flex;
+      margin: 14px 22px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      gap: 0;
+    }
+
+    .lb-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      color: rgba(255,255,255,0.35);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 0 0 10px;
+      margin-right: 18px;
+      cursor: pointer;
+      transition: color 0.15s;
+      letter-spacing: -0.13px;
+    }
+    .lb-tab.active {
+      color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    #lb-list {
+      position: absolute;
+      top: 140px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+      padding: 4px 0 0;
+      -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+      scrollbar-width: none;
+    }
+    #lb-list::-webkit-scrollbar { display: none; }
+
+    .lb-row {
+      display: flex;
+      align-items: center;
+      padding: 5px 22px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -0.13px;
+    }
+    .lb-rank-col {
+      width: 30px;
+      color: rgba(255,255,255,0.35);
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+    }
+    .lb-rank-bar {
+      width: 1px;
+      height: 22px;
+      background: rgba(255,255,255,0.2);
+      margin: 0 auto;
+    }
+    .lb-initials {
+      flex: 1;
+      color: #fff;
+    }
+    .lb-score {
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+    .lb-row.current-user .lb-initials,
+    .lb-row.current-user .lb-score {
+      color: #ffd60a;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      #game-container { width: 100vw; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="page-brand">Dialed.</div>
+<div id="page-version">Color v1.4</div>
+
+<div id="game-container">
+
+  <!-- ══════════════════ INTRO ══════════════════ -->
+  <div class="screen active" id="intro-screen">
+    <h1 id="intro-title">color</h1>
+    <div id="intro-body">
+      <p>Humans can't reliably recall colors. This is a simple game to see how good (or bad) you are at it.</p>
+      <p>We'll show you five colors, then you'll try and recreate them.</p>
+      <p id="intro-mode-label">Solo or multiplayer?</p>
+    </div>
+    <div class="intro-mode-btns">
+      <!-- Solo -->
+      <button class="intro-mode-btn" id="intro-solo" title="Play solo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+          <path d="M15.75 6.5C15.75 8.57 14.07 10.25 12 10.25C9.93 10.25 8.25 8.57 8.25 6.5C8.25 4.43 9.93 2.75 12 2.75C14.07 2.75 15.75 4.43 15.75 6.5Z"/>
+          <path d="M12 13.25C8.61 13.25 6.04 15.26 4.98 18.11C4.57 19.22 5.52 20.25 6.7 20.25H17.3C18.48 20.25 19.43 19.22 19.02 18.11C17.96 15.26 15.39 13.25 12 13.25Z"/>
+        </svg>
+      </button>
+      <!-- Multi (disabled) -->
+      <button class="intro-mode-btn" id="intro-multi" title="Multiplayer" style="opacity:0.4;cursor:not-allowed" disabled>
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9.5C13.3807 9.5 14.5 8.38071 14.5 7C14.5 5.61929 13.3807 4.5 12 4.5C10.6193 4.5 9.5 5.61929 9.5 7C9.5 8.38071 10.6193 9.5 12 9.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 11C5.60457 11 6.5 10.1046 6.5 9C6.5 7.89543 5.60457 7 4.5 7C3.39543 7 2.5 7.89543 2.5 9C2.5 10.1046 3.39543 11 4.5 11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.5 11C20.6046 11 21.5 10.1046 21.5 9C21.5 7.89543 20.6046 7 19.5 7C18.3954 7 17.5 7.89543 17.5 9C17.5 10.1046 18.3954 11 19.5 11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 19.25H15.5C16.4665 19.25 17.25 18.4665 17.25 17.5C17.25 14.6005 14.8995 12.25 12 12.25C9.1005 12.25 6.75 14.6005 6.75 17.5C6.75 18.4665 7.5335 19.25 8.5 19.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.75136 18.2498H2.50119C1.39662 18.2498 0.470354 17.3063 0.986733 16.3299C1.67862 15.0215 3.02859 14.0591 4.50136 13.812" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.25 18.2498H21.5C22.6046 18.2498 23.5308 17.3063 23.0145 16.3298C22.3227 15.0215 20.9728 14.0591 19.5 13.812" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <!-- Daily (disabled) -->
+      <button class="intro-mode-btn" id="intro-daily" title="Daily challenge" style="opacity:0.4;cursor:not-allowed;background:conic-gradient(from 0deg,#ff6b6b,#ffa500,#ffff00,#00c853,#2196f3,#9c27b0,#ff6b6b);padding:3px" disabled>
+        <span style="width:100%;height:100%;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+        </span>
+      </button>
+      <!-- Easy/Hard toggle -->
+      <button class="mode-toggle" id="intro-toggle" title="Toggle difficulty">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:36px;flex-shrink:0"><path d="M1.75 12C1.75 8.54822 4.54822 5.75 8 5.75H16C19.4518 5.75 22.25 8.54822 22.25 12C22.25 15.4518 19.4518 18.25 16 18.25H8C4.54822 18.25 1.75 15.4518 1.75 12Z" stroke="currentColor" stroke-width="1.5"/><path class="toggle-knob" id="toggle-knob-path" d="M12.75 12C12.75 10.2051 14.2051 8.75 16 8.75C17.7949 8.75 19.25 10.2051 19.25 12C19.25 13.7949 17.7949 15.25 16 15.25C14.2051 15.25 12.75 13.7949 12.75 12Z" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span id="toggle-label">Easy</span>
+      </button>
+      <!-- Leaderboard -->
+      <button id="intro-lb-btn" title="High Scores">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.55211 3.25C5.65611 5.69807 6.48402 7.13205 9.05211 7.58013C9.94812 5.13205 9.12021 3.69807 6.55211 3.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.05998 8.17912C2.82812 10.7757 3.99896 11.9465 6.59552 11.7147C6.82738 9.1181 5.65654 7.94726 3.05998 8.17912Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.67188 14.2992C3.11994 16.8673 4.55393 17.6952 7.002 16.7992C6.55393 14.2311 5.11995 13.4032 2.67188 14.2992Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.4506 3.25C18.3466 5.69807 17.5186 7.13205 14.9506 7.58013C14.0545 5.13205 14.8825 3.69807 17.4506 3.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.9315 8.17912C21.1633 10.7757 19.9925 11.9465 17.3959 11.7147C17.1641 9.1181 18.3349 7.94726 20.9315 8.17912Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.3301 14.2982C20.8821 16.8663 19.4481 17.6942 17 16.7982C17.4481 14.2301 18.8821 13.4022 21.3301 14.2982Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 16.7979C9.4429 19.4992 13.2165 18.7897 15.5 21.4992" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 16.7979C14.5571 19.4992 10.7835 18.7897 8.5 21.4992" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <a id="intro-credit" href="#" tabindex="-1">
+      <span class="credit-version">Color v1.4</span>
+    </a>
+  </div>
+
+  <!-- ══════════════════ COUNTDOWN ══════════════════ -->
+  <div class="screen" id="countdown-screen">
+    <div class="round-indicator" id="countdown-round"></div>
+    <div id="countdown-word"></div>
+  </div>
+
+  <!-- ══════════════════ MEMORIZE ══════════════════ -->
+  <div class="screen" id="memorize-screen">
+    <div id="memorize-color"></div>
+    <div class="round-indicator" id="memorize-round"></div>
+    <div id="timer-value"><span id="timer-int">5</span><span id="timer-dec">00</span></div>
+    <div id="timer-label">Seconds to remember</div>
+  </div>
+
+  <!-- ══════════════════ PICKER ══════════════════ -->
+  <div class="screen" id="picker-screen">
+    <div id="picker-bg"></div>
+    <div class="round-indicator" id="picker-round"></div>
+    <div class="strip-container">
+      <div class="strip" id="h-strip"><div class="strip-handle" id="h-handle"></div></div>
+      <div class="strip" id="s-strip"><div class="strip-handle" id="s-handle"></div></div>
+      <div class="strip" id="b-strip"><div class="strip-handle" id="b-handle"></div></div>
+    </div>
+    <div id="picker-info">
+      <div id="picker-label">Your selection</div>
+      <div id="picker-values">H180 S50 B50</div>
+    </div>
+    <button class="go-btn" id="picker-go" aria-label="Submit">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.75 5.25037L18.0332 5.47093C18.1062 5.70832 18.292 5.89416 18.5294 5.9672L18.75 5.25037ZM11.4697 11.47C11.1768 11.7629 11.1768 12.2378 11.4697 12.5307C11.7626 12.8236 12.2374 12.8236 12.5303 12.5307L11.4697 11.47ZM11.1435 7.55779C11.5501 7.47853 11.8154 7.08469 11.7361 6.67813C11.6569 6.27157 11.263 6.00625 10.8565 6.08552L11.1435 7.55779ZM17.9147 13.1439C17.994 12.7374 17.7287 12.3435 17.3221 12.2642C16.9156 12.185 16.5217 12.4503 16.4425 12.8568L17.9147 13.1439ZM12.4601 3.51259C12.8737 3.53462 13.2269 3.21717 13.2489 2.80354C13.271 2.38992 12.9535 2.03674 12.5399 2.01471L12.4601 3.51259ZM21.9857 11.4605C21.9636 11.0468 21.6105 10.7294 21.1968 10.7514C20.7832 10.7735 20.4657 11.1266 20.4878 11.5403L21.9857 11.4605ZM17.1592 2.63056L18.0332 5.47093L19.4668 5.0298L18.5929 2.18943L17.1592 2.63056ZM18.5294 5.9672L21.3698 6.84116L21.8109 5.40749L18.9706 4.53353L18.5294 5.9672ZM21.1732 6.00004L18.3629 8.65845L19.3937 9.74816L22.204 7.08974L21.1732 6.00004ZM17.5039 9.00037H14.25V10.5004H17.5039V9.00037ZM15 9.75037V6.49644H13.5V9.75037H15ZM15.3419 5.63744L18.0003 2.82712L16.9106 1.79632L14.2522 4.60664L15.3419 5.63744ZM13.7197 9.22004L11.4697 11.47L12.5303 12.5307L14.7803 10.2807L13.7197 9.22004ZM18.3629 8.65845C18.1308 8.87802 17.8234 9.00037 17.5039 9.00037V10.5004C18.2068 10.5004 18.8831 10.2312 19.3937 9.74816L18.3629 8.65845ZM21.3698 6.84116C21.0038 6.72855 20.8951 6.26318 21.1732 6.00004L22.204 7.08974C22.7604 6.56346 22.5429 5.63271 21.8109 5.40749L21.3698 6.84116ZM15 6.49644C15 6.17693 15.1223 5.86956 15.3419 5.63744L14.2522 4.60664C13.7692 5.11729 13.5 5.79352 13.5 6.49644H15ZM18.5929 2.18943C18.3677 1.45746 17.4369 1.23996 16.9106 1.79632L18.0003 2.82712C17.7372 3.1053 17.2718 2.99654 17.1592 2.63056L18.5929 2.18943ZM12.013 16.5003C9.52054 16.5003 7.5 14.4797 7.5 11.9873H6C6 15.3082 8.69211 18.0003 12.013 18.0003V16.5003ZM7.5 11.9873C7.5 9.79277 9.06706 7.96265 11.1435 7.55779L10.8565 6.08552C8.08896 6.62511 6 9.06141 6 11.9873H7.5ZM16.4425 12.8568C16.0376 14.9333 14.2075 16.5003 12.013 16.5003V18.0003C14.9388 18.0003 17.3751 15.9114 17.9147 13.1439L16.4425 12.8568ZM20.5 12.0004C20.5 16.6948 16.6944 20.5004 12 20.5004V22.0004C17.5228 22.0004 22 17.5232 22 12.0004H20.5ZM12 20.5004C7.30558 20.5004 3.5 16.6948 3.5 12.0004H2C2 17.5232 6.47715 22.0004 12 22.0004V20.5004ZM3.5 12.0004C3.5 7.30595 7.30558 3.50037 12 3.50037V2.00037C6.47715 2.00037 2 6.47752 2 12.0004H3.5ZM12 3.50037C12.1544 3.50037 12.3078 3.50448 12.4601 3.51259L12.5399 2.01471C12.3611 2.00519 12.1811 2.00037 12 2.00037V3.50037ZM20.4878 11.5403C20.4959 11.6925 20.5 11.8459 20.5 12.0004H22C22 11.8193 21.9952 11.6393 21.9857 11.4605L20.4878 11.5403Z" fill="#000"/></svg>
+    </button>
+  </div>
+
+  <!-- ══════════════════ RESULT ══════════════════ -->
+  <div class="screen" id="result-screen">
+    <div class="round-indicator" id="result-round"></div>
+    <div id="result-score"><span class="score-int">0</span><span class="score-dot">.</span><span class="score-dec">00</span></div>
+    <div id="result-feedback"></div>
+    <div class="result-half" id="result-top">
+      <span class="result-label">Your selection</span>
+      <span class="result-hsb" id="result-top-hsb"></span>
+    </div>
+    <div class="result-half" id="result-bottom">
+      <span class="result-label">Original</span>
+      <span class="result-hsb" id="result-bottom-hsb"></span>
+    </div>
+    <button class="go-btn" id="result-go" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 5.75L20.25 12L14 18.25"/>
+        <path d="M19.5 12H3.75"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ══════════════════ TOTAL ══════════════════ -->
+  <div class="screen" id="total-screen">
+    <button id="total-close">&#x2715;</button>
+    <div id="total-percentile">Top <span id="total-pct">—</span> of all players</div>
+    <div id="total-score-wrap"><span id="total-score-main"></span><span id="total-score-denom">/50</span></div>
+    <div id="total-description"></div>
+    <div id="total-tiles"></div>
+    <div id="total-actions">
+      <button id="total-initials-btn" title="Set your initials"></button>
+      <button id="total-post-btn">Post score &amp; challenge a friend</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ LEADERBOARD ══════════════════ -->
+  <div class="screen" id="leaderboard-screen">
+    <button id="lb-close">&#x2715;</button>
+    <div id="lb-title">High Scores</div>
+    <div id="lb-subtitle"></div>
+    <div id="lb-tabs">
+      <button class="lb-tab active" data-tab="easy">Easy</button>
+      <button class="lb-tab" data-tab="hard">Hard</button>
+    </div>
+    <div id="lb-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════════════════
+const TOTAL_ROUNDS   = 5;
+const TIMER_EASY     = 5;     // seconds
+const TIMER_HARD     = 2;
+const COUNTDOWN_WORD_DUR = 700;  // ms each word (ready/set/go) stays visible
+
+// ════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════
+let round      = 1;
+let easyMode   = true;
+let targetHSB  = null;   // {h,s,b}
+let pickedHSB  = {h:180, s:50, b:50};
+let roundScores = [];
+let roundColors = [];   // [{picked:{h,s,b}, target:{h,s,b}}, ...]
+let timerRaf   = null;
+let timerStart = null;
+let timerTotal = TIMER_EASY;
+let activeStrip = null;
+
+// ════════════════════════════════════════════════════
+//  COLOR MATH
+// ════════════════════════════════════════════════════
+function hsbToRgb(h, s, b) {
+  s /= 100; b /= 100;
+  const hi = Math.floor(h / 60) % 6;
+  const f  = h / 60 - Math.floor(h / 60);
+  const p  = b * (1 - s);
+  const q  = b * (1 - f * s);
+  const t  = b * (1 - (1 - f) * s);
+  const tbl = [[b,t,p],[q,b,p],[p,b,t],[p,q,b],[t,p,b],[b,p,q]];
+  return tbl[hi].map(v => Math.round(v * 255));
+}
+
+function hsbToCss(h, s, b) {
+  const [r,g,bv] = hsbToRgb(h, s, b);
+  return `rgb(${r},${g},${bv})`;
+}
+
+function hsbLabel({h, s, b}) {
+  return `H${h} S${s} B${b}`;
+}
+
+function calcScore(a, b_) {
+  const dh = Math.min(Math.abs(a.h - b_.h), 360 - Math.abs(a.h - b_.h));
+  const ds = Math.abs(a.s - b_.s);
+  const db = Math.abs(a.b - b_.b);
+  const raw = Math.sqrt((dh/180)**2 + (ds/100)**2 + (db/100)**2);
+  const MAX_RAW = Math.sqrt(3); // ~1.732 (worst possible distance)
+  return parseFloat(((1 - raw / MAX_RAW) * 10).toFixed(2));
+}
+
+function scoreFeedback(score) {
+  // score: 10 = perfect, 0 = worst
+  if (score >= 9.9)  return 'Perfect match!';
+  if (score >= 9.0)  return 'Practically perfect.';
+  if (score >= 8.0)  return 'So close!';
+  if (score >= 6.5)  return 'Pretty good.';
+  if (score >= 5.0)  return 'Not bad.';
+  if (score >= 3.5)  return 'Getting somewhere.';
+  if (score >= 2.0)  return 'Room for improvement.';
+  if (score >= 1.0)  return 'Quite far off.';
+  return 'Boldly, catastrophically wrong.';
+}
+
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomHSB() {
+  return { h: randInt(0, 359), s: randInt(25, 95), b: randInt(25, 90) };
+}
+
+// ════════════════════════════════════════════════════
+//  SCREEN TRANSITIONS
+// ════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════
+//  INTRO
+// ════════════════════════════════════════════════════
+const introSolo  = document.getElementById('intro-solo');
+const modeLabel  = document.getElementById('intro-mode-label');
+const introPara1 = document.querySelector('#intro-body p:first-child');
+const introPara2 = document.querySelector('#intro-body p:nth-child(2)');
+
+introSolo.addEventListener('mouseenter', () => {
+  modeLabel.textContent = "Let's go it alone.";
+  introSolo.classList.add('solo-active');
+});
+introSolo.addEventListener('mouseleave', () => {
+  modeLabel.textContent = 'Solo or multiplayer?';
+  introSolo.classList.remove('solo-active');
+});
+introSolo.addEventListener('click', () => {
+  round = 1;
+  roundScores = [];
+  roundColors = [];
+  startCountdown();
+});
+
+// Toggle difficulty
+const toggleBtn   = document.getElementById('intro-toggle');
+const toggleLabel = document.getElementById('toggle-label');
+
+// Animate knob via translateX on the path's parent group — use CSS transform
+const toggleSvg = toggleBtn.querySelector('svg');
+toggleSvg.style.transition = 'none'; // path moves via CSS class
+
+toggleBtn.addEventListener('click', () => {
+  easyMode = !easyMode;
+  toggleLabel.textContent = easyMode ? 'Easy' : 'Hard';
+  toggleSvg.classList.toggle('hard-mode', !easyMode);
+  timerTotal = easyMode ? TIMER_EASY : TIMER_HARD;
+});
+
+function showIntro() {
+  const introEl = document.getElementById('intro-screen');
+  introEl.style.position = '';
+  introEl.style.inset = '';
+  document.getElementById('game-container').style.height = '';
+  showScreen('intro-screen');
+  modeLabel.textContent = 'Solo or multiplayer?';
+}
+
+// ════════════════════════════════════════════════════
+//  COUNTDOWN → ready / set / go on black background
+// ════════════════════════════════════════════════════
+function startCountdown() {
+  targetHSB = randomHSB();
+
+  const cd      = document.getElementById('countdown-screen');
+  const cdWord  = document.getElementById('countdown-word');
+  const cdRound = document.getElementById('countdown-round');
+
+  cdRound.textContent = `${round} / ${TOTAL_ROUNDS}`;
+  cd.style.backgroundColor = '#000';
+
+  const words = ['ready', 'set', 'go'];
+  let idx = 0;
+
+  function showWord() {
+    cdWord.style.opacity = '0';
+    setTimeout(() => {
+      cdWord.textContent = words[idx];
+      cdWord.style.opacity = '1';
+      idx++;
+      if (idx < words.length) {
+        setTimeout(showWord, COUNTDOWN_WORD_DUR);
+      } else {
+        setTimeout(() => {
+          cdWord.style.opacity = '0';
+          setTimeout(startMemorize, 200);
+        }, COUNTDOWN_WORD_DUR);
+      }
+    }, 150);
+  }
+
+  const introEl = document.getElementById('intro-screen');
+  introEl.style.position = 'absolute';
+  introEl.style.inset = '0';
+  document.getElementById('game-container').style.height = '390px';
+  showScreen('countdown-screen');
+  showWord();
+}
+
+// ════════════════════════════════════════════════════
+//  MEMORIZE
+// ════════════════════════════════════════════════════
+function startMemorize() {
+  const memColor = document.getElementById('memorize-color');
+  const memRound = document.getElementById('memorize-round');
+  const timerInt = document.getElementById('timer-int');
+  const timerDec = document.getElementById('timer-dec');
+
+  memColor.style.background = hsbToCss(targetHSB.h, targetHSB.s, targetHSB.b);
+  memRound.textContent = `${round} / ${TOTAL_ROUNDS}`;
+
+  timerTotal = easyMode ? TIMER_EASY : TIMER_HARD;
+  timerStart = null;
+
+  showScreen('memorize-screen');
+
+  if (timerRaf) cancelAnimationFrame(timerRaf);
+
+  function tick(ts) {
+    if (!timerStart) timerStart = ts;
+    const elapsed = (ts - timerStart) / 1000;
+    const remaining = Math.max(0, timerTotal - elapsed);
+
+    const intPart  = Math.floor(remaining);
+    const decPart  = Math.floor((remaining - intPart) * 100);
+    timerInt.textContent = intPart;
+    timerDec.textContent = String(decPart).padStart(2, '0');
+
+    if (remaining > 0) {
+      timerRaf = requestAnimationFrame(tick);
+    } else {
+      timerRaf = null;
+      startPicker();
+    }
+  }
+
+  timerRaf = requestAnimationFrame(tick);
+}
+
+// ════════════════════════════════════════════════════
+//  PICKER
+// ════════════════════════════════════════════════════
+function startPicker() {
+  // Randomise starting position so it's not always H180
+  pickedHSB = {
+    h: randInt(0, 359),
+    s: randInt(20, 80),
+    b: randInt(30, 80),
+  };
+
+  document.getElementById('picker-round').textContent = `${round} / ${TOTAL_ROUNDS}`;
+  updatePicker();
+  showScreen('picker-screen');
+
+  // Force layout then update handles (need real heights)
+  requestAnimationFrame(() => { requestAnimationFrame(updatePicker); });
+}
+
+function updatePicker() {
+  const {h, s, b} = pickedHSB;
+  const css = hsbToCss(h, s, b);
+
+  document.getElementById('picker-bg').style.background = css;
+  document.getElementById('picker-values').textContent   = hsbLabel(pickedHSB);
+
+  // Update text color based on brightness
+  const brightness = (hsbToRgb(h, s, b).reduce((a,c) => a+c, 0) / 3);
+  const textColor = brightness > 140 ? 'rgba(0,0,0,0.7)' : '#fff';
+  document.getElementById('picker-label').style.color  = textColor;
+  document.getElementById('picker-values').style.color = textColor;
+  document.getElementById('picker-round').style.color  = textColor;
+
+  // Hue strip: always rainbow
+  document.getElementById('h-strip').style.background = `linear-gradient(to bottom,
+    hsl(0,100%,50%), hsl(30,100%,50%), hsl(60,100%,50%), hsl(90,100%,50%),
+    hsl(120,100%,50%), hsl(150,100%,50%), hsl(180,100%,50%), hsl(210,100%,50%),
+    hsl(240,100%,50%), hsl(270,100%,50%), hsl(300,100%,50%), hsl(330,100%,50%), hsl(360,100%,50%))`;
+
+  // Saturation strip: grey→full hue at current brightness
+  const greyAtB  = hsbToCss(h, 0,   b);
+  const fullAtB  = hsbToCss(h, 100, b);
+  document.getElementById('s-strip').style.background = `linear-gradient(to bottom, ${greyAtB}, ${fullAtB})`;
+
+  // Brightness strip: white tint → black
+  const fullHue  = hsbToCss(h, s, 100);
+  document.getElementById('b-strip').style.background = `linear-gradient(to bottom, ${fullHue}, #000)`;
+
+  // Handle positions
+  placeHandle('h-handle', 'h-strip', h / 360);
+  placeHandle('s-handle', 's-strip', s / 100);
+  placeHandle('b-handle', 'b-strip', 1 - b / 100);
+}
+
+function placeHandle(handleId, stripId, fraction) {
+  const strip  = document.getElementById(stripId);
+  const handle = document.getElementById(handleId);
+  const h      = strip.offsetHeight;
+  handle.style.top = `${fraction * h}px`;
+}
+
+// Strip drag
+['h-strip','s-strip','b-strip'].forEach(id => {
+  const el  = document.getElementById(id);
+  const dim = id.charAt(0); // 'h','s','b'
+
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    el.setPointerCapture(e.pointerId);
+    activeStrip = {el, dim};
+    applyStripDrag(el, dim, e.clientY);
+  });
+  el.addEventListener('pointermove', e => {
+    if (!activeStrip || activeStrip.el !== el) return;
+    e.preventDefault();
+    applyStripDrag(el, dim, e.clientY);
+  });
+  el.addEventListener('pointerup',     () => { activeStrip = null; });
+  el.addEventListener('pointercancel', () => { activeStrip = null; });
+});
+
+function applyStripDrag(stripEl, dim, clientY) {
+  const rect  = stripEl.getBoundingClientRect();
+  const frac  = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+  if (dim === 'h') pickedHSB.h = Math.round(frac * 360) % 360;
+  if (dim === 's') pickedHSB.s = Math.round(frac * 100);
+  if (dim === 'b') pickedHSB.b = Math.round((1 - frac) * 100);
+  updatePicker();
+}
+
+document.getElementById('picker-go').addEventListener('click', showResult);
+
+// ════════════════════════════════════════════════════
+//  RESULT
+// ════════════════════════════════════════════════════
+function showResult() {
+  const score = calcScore(pickedHSB, targetHSB);
+  roundScores.push(score);
+  roundColors.push({ picked: {...pickedHSB}, target: {...targetHSB} });
+
+  // Colors
+  document.getElementById('result-top').style.background    = hsbToCss(pickedHSB.h, pickedHSB.s, pickedHSB.b);
+  document.getElementById('result-bottom').style.background = hsbToCss(targetHSB.h, targetHSB.s, targetHSB.b);
+  document.getElementById('result-top-hsb').textContent     = hsbLabel(pickedHSB);
+  document.getElementById('result-bottom-hsb').textContent  = hsbLabel(targetHSB);
+
+  // Score
+  const [si, sd] = score.toFixed(2).split('.');
+  document.querySelector('.score-int').textContent = si;
+  document.querySelector('.score-dec').textContent = sd;
+  document.getElementById('result-feedback').textContent = scoreFeedback(score);
+  document.getElementById('result-round').textContent    = `${round} / ${TOTAL_ROUNDS}`;
+
+  // Text color for each half
+  const setHalfColor = (halfId, h, s, b) => {
+    const br = hsbToRgb(h, s, b).reduce((a,c) => a+c, 0) / 3;
+    const c  = br > 140 ? 'rgba(0,0,0,0.6)' : '#fff';
+    document.querySelectorAll(`#${halfId} .result-label, #${halfId} .result-hsb`).forEach(el => el.style.color = c);
+  };
+  setHalfColor('result-top',    pickedHSB.h, pickedHSB.s, pickedHSB.b);
+  setHalfColor('result-bottom', targetHSB.h, targetHSB.s, targetHSB.b);
+
+  // Score text color (based on top half background)
+  const topBr = hsbToRgb(pickedHSB.h, pickedHSB.s, pickedHSB.b).reduce((a,c) => a+c, 0) / 3;
+  const scoreColor = topBr > 140 ? 'rgba(0,0,0,0.85)' : '#fff';
+  document.getElementById('result-score').style.color    = scoreColor;
+  document.getElementById('result-feedback').style.color = scoreColor;
+  document.getElementById('result-round').style.color    = '#fff';
+
+  showScreen('result-screen');
+}
+
+document.getElementById('result-go').addEventListener('click', () => {
+  if (round >= TOTAL_ROUNDS) {
+    showTotal();
+  } else {
+    round++;
+    startCountdown();
+  }
+});
+
+// ════════════════════════════════════════════════════
+//  TOTAL SCREEN
+// ════════════════════════════════════════════════════
+let playerInitials = localStorage.getItem('color-initials') || 'ME';
+
+function calcPercentile(total) {
+  if (total >= 49) return '0.1%';
+  if (total >= 47) return '1%';
+  if (total >= 44) return '3%';
+  if (total >= 40) return '10%';
+  if (total >= 35) return '20%';
+  if (total >= 28) return '35%';
+  if (total >= 20) return '55%';
+  return '75%';
+}
+
+function totalFeedback(total) {
+  if (total >= 49) return 'You might actually be a color wizard.';
+  if (total >= 45) return 'Extraordinarily sharp color memory.';
+  if (total >= 40) return 'Remarkably accurate. You should be a painter.';
+  if (total >= 32) return 'Pretty good. Well above average.';
+  if (total >= 22) return 'Not bad. A few more rounds and you might get there.';
+  if (total >= 14) return 'Your color memory needs some serious work.';
+  return 'A blindfolded toddler smashing the screen would have outperformed you.';
+}
+
+function showTotal() {
+  const total = roundScores.reduce((a, b) => a + b, 0);
+  const [si, sd] = total.toFixed(2).split('.');
+
+  document.getElementById('total-score-main').textContent = `${si}.${sd}`;
+  document.getElementById('total-pct').textContent = calcPercentile(total);
+  document.getElementById('total-description').textContent = totalFeedback(total);
+
+  // Build color tiles
+  const tilesEl = document.getElementById('total-tiles');
+  tilesEl.innerHTML = '';
+  roundColors.forEach((rc, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'total-tile';
+    const pickedCss = hsbToCss(rc.picked.h, rc.picked.s, rc.picked.b);
+    const targetCss = hsbToCss(rc.target.h, rc.target.s, rc.target.b);
+    tile.style.background = `linear-gradient(to bottom right, ${pickedCss} 50%, ${targetCss} 50%)`;
+    const scoreEl = document.createElement('div');
+    scoreEl.className = 'total-tile-score';
+    scoreEl.textContent = roundScores[i].toFixed(2);
+    tile.appendChild(scoreEl);
+    tilesEl.appendChild(tile);
+  });
+
+  // Initials button
+  document.getElementById('total-initials-btn').textContent = playerInitials;
+
+  showScreen('total-screen');
+}
+
+document.getElementById('total-close').addEventListener('click', () => {
+  round = 1;
+  roundScores = [];
+  roundColors = [];
+  showIntro();
+});
+
+document.getElementById('total-initials-btn').addEventListener('click', () => {
+  const val = prompt('Enter your initials (1–3 letters):', playerInitials);
+  if (val) {
+    playerInitials = val.trim().toUpperCase().slice(0, 3) || playerInitials;
+    localStorage.setItem('color-initials', playerInitials);
+    document.getElementById('total-initials-btn').textContent = playerInitials;
+  }
+});
+
+document.getElementById('total-post-btn').addEventListener('click', () => {
+  const total = roundScores.reduce((a, b) => a + b, 0);
+  const tab = easyMode ? 'easy' : 'hard';
+  const key = `lb-scores-${tab}`;
+  let existing = [];
+  try { existing = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+  existing.push({ initials: playerInitials, score: parseFloat(total.toFixed(2)), user: true });
+  localStorage.setItem(key, JSON.stringify(existing));
+  alert(`Score ${total.toFixed(2)} posted as "${playerInitials}"!`);
+});
+
+// ════════════════════════════════════════════════════
+//  LEADERBOARD
+// ════════════════════════════════════════════════════
+function seededRng(seed) {
+  let s = seed >>> 0;
+  return () => { s = Math.imul(1664525, s) + 1013904223 >>> 0; return s / 0x100000000; };
+}
+
+function genLeaderboard(mode) {
+  const rng = seededRng(mode === 'easy' ? 0xDEAD : 0xBEEF);
+  const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+  const vowels = 'AEIOU';
+  const entries = [];
+  const count = 60;
+  for (let i = 0; i < count; i++) {
+    const c1 = consonants[Math.floor(rng() * consonants.length)];
+    const v1 = vowels[Math.floor(rng() * vowels.length)];
+    const c2 = consonants[Math.floor(rng() * consonants.length)];
+    const initials = c1 + v1 + c2;
+    const baseScore = Math.max(0, 50 - i * 0.28 - rng() * 0.4);
+    entries.push({ initials, score: parseFloat(baseScore.toFixed(2)), fake: true });
+  }
+  return entries;
+}
+
+const lbData = {
+  easy: genLeaderboard('easy'),
+  hard: genLeaderboard('hard'),
+};
+
+function getLbEntries(tab) {
+  const key = `lb-scores-${tab}`;
+  let userScores = [];
+  try { userScores = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+  const all = [...lbData[tab], ...userScores];
+  all.sort((a, b) => b.score - a.score);
+  return all;
+}
+
+let lbCurrentTab = 'easy';
+
+function renderLeaderboard(tab) {
+  lbCurrentTab = tab;
+  const entries = getLbEntries(tab);
+  const listEl = document.getElementById('lb-list');
+  const subtitleEl = document.getElementById('lb-subtitle');
+  const totalCount = entries.length + Math.floor(entries.length * 53.4);
+  subtitleEl.textContent = `${(totalCount * 1000).toLocaleString()} scores submitted`;
+
+  listEl.innerHTML = '';
+  let rank = 1;
+  for (let i = 0; i < entries.length; i++) {
+    const e = entries[i];
+    const tied = i > 0 && entries[i-1].score === e.score;
+    const row = document.createElement('div');
+    row.className = 'lb-row' + (e.user ? ' current-user' : '');
+    const rankCol = document.createElement('div');
+    rankCol.className = 'lb-rank-col';
+    if (!tied) {
+      rankCol.textContent = rank;
+    } else {
+      const bar = document.createElement('div');
+      bar.className = 'lb-rank-bar';
+      rankCol.appendChild(bar);
+    }
+    const initialsEl = document.createElement('div');
+    initialsEl.className = 'lb-initials';
+    initialsEl.textContent = e.initials;
+    const scoreEl = document.createElement('div');
+    scoreEl.className = 'lb-score';
+    scoreEl.textContent = e.score.toFixed(2);
+    row.appendChild(rankCol);
+    row.appendChild(initialsEl);
+    row.appendChild(scoreEl);
+    listEl.appendChild(row);
+    if (!tied) rank = i + 2;
+  }
+
+  // Update tab UI
+  document.querySelectorAll('.lb-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+}
+
+document.getElementById('intro-lb-btn').addEventListener('click', () => {
+  document.getElementById('game-container').style.height = '440px';
+  renderLeaderboard('easy');
+  showScreen('leaderboard-screen');
+});
+
+document.getElementById('lb-close').addEventListener('click', showIntro);
+
+document.querySelectorAll('.lb-tab').forEach(btn => {
+  btn.addEventListener('click', () => renderLeaderboard(btn.dataset.tab));
+});
+</script>
+</body>
+</html>
