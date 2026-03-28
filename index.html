@@ -573,6 +573,116 @@
     #total-post-btn:hover { transform: scale(1.01); }
     #total-post-btn:active { transform: scale(0.98); }
 
+    /* ════════════════════════════════════════
+       SHARE MODAL
+    ════════════════════════════════════════ */
+    #share-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    #share-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #share-modal {
+      background: #1c1c1e;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 20px 28px;
+      width: min(460px, 100vw);
+      max-height: 92vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      color: #fff;
+      transform: translateY(40px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #share-overlay.active #share-modal {
+      transform: translateY(0);
+    }
+    #share-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #share-modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    #share-modal-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    #share-modal-close:hover { background: rgba(255,255,255,0.2); }
+    #share-preview-wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #share-canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    #share-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .share-btn {
+      height: 50px;
+      border-radius: 14px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform 0.15s, filter 0.15s;
+      letter-spacing: -0.2px;
+      font-family: inherit;
+    }
+    .share-btn:hover { filter: brightness(1.12); }
+    .share-btn:active { transform: scale(0.96); }
+    .share-btn-native {
+      grid-column: 1 / -1;
+      background: #fff;
+      color: #000;
+      height: 54px;
+      font-size: 14px;
+    }
+    .share-btn-whatsapp { background: #25D366; color: #fff; }
+    .share-btn-twitter  { background: #000; color: #fff; border: 1.5px solid rgba(255,255,255,0.15); }
+    .share-btn-copy     { background: rgba(255,255,255,0.1); color: #fff; }
+    .share-btn-download { background: rgba(255,255,255,0.1); color: #fff; }
+
     #intro-lb-btn {
       width: 40px;
       height: 40px;
@@ -914,6 +1024,41 @@
     <div id="lb-list"></div>
   </div>
 
+</div>
+
+<!-- ══════════════════ SHARE MODAL ══════════════════ -->
+<div id="share-overlay">
+  <div id="share-modal" role="dialog" aria-modal="true" aria-label="Share your score">
+    <div id="share-modal-header">
+      <span id="share-modal-title">Challenge a friend</span>
+      <button id="share-modal-close" aria-label="Close">&#x2715;</button>
+    </div>
+    <div id="share-preview-wrap">
+      <canvas id="share-canvas"></canvas>
+    </div>
+    <div id="share-btns">
+      <button class="share-btn share-btn-native" id="share-native-btn" style="display:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        Share
+      </button>
+      <button class="share-btn share-btn-whatsapp" id="share-wa-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        WhatsApp
+      </button>
+      <button class="share-btn share-btn-twitter" id="share-x-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X / Twitter
+      </button>
+      <button class="share-btn share-btn-copy" id="share-copy-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy link
+      </button>
+      <button class="share-btn share-btn-download" id="share-dl-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Save image
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1343,15 +1488,229 @@ document.getElementById('total-initials-btn').addEventListener('click', () => {
   }
 });
 
-document.getElementById('total-post-btn').addEventListener('click', () => {
+// ════════════════════════════════════════════════════
+//  SHARE MODAL
+// ════════════════════════════════════════════════════
+function rrect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function generateShareCanvas() {
   const total = roundScores.reduce((a, b) => a + b, 0);
+  const SZ = 600;
+  const canvas = document.getElementById('share-canvas');
+  canvas.width = SZ;
+  canvas.height = SZ;
+  const ctx = canvas.getContext('2d');
+  const FONT = '-apple-system, "Inter", system-ui, sans-serif';
+
+  // Background
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0, 0, SZ, SZ);
+
+  // Subtle grid texture
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < SZ; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, SZ); ctx.stroke(); }
+  for (let y = 0; y < SZ; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(SZ, y); ctx.stroke(); }
+
+  // Branding
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = `600 15px ${FONT}`;
+  ctx.fillText('DoppleHue', 32, 46);
+
+  // Mode pill
+  const modeLabel = easyMode ? 'Easy' : 'Hard';
+  ctx.font = `600 12px ${FONT}`;
+  const pillW = ctx.measureText(modeLabel).width + 22;
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  rrect(ctx, SZ - pillW - 24, 30, pillW, 24, 12);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.fillText(modeLabel, SZ - pillW - 13, 46);
+
+  // Big score
+  const [si, sd] = total.toFixed(2).split('.');
+  ctx.fillStyle = '#fff';
+  ctx.font = `400 108px ${FONT}`;
+  const scoreStr = `${si}.${sd}`;
+  const scoreW = ctx.measureText(scoreStr).width;
+  ctx.fillText(scoreStr, 32, 172);
+
+  // /50 suffix
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.font = `400 42px ${FONT}`;
+  ctx.fillText('/50', 32 + scoreW + 4, 172);
+
+  // Percentile
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = `500 14px ${FONT}`;
+  ctx.fillText(`Top ${calcPercentile(total)} of all players`, 32, 204);
+
+  // Description
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = `500 14px ${FONT}`;
+  ctx.fillText(totalFeedback(total), 32, 228);
+
+  // Color tiles
+  const TILE_TOP = 262;
+  const TILE_H   = 220;
+  const GAP      = 8;
+  const TOTAL_W  = SZ - 64;
+  const TILE_W   = (TOTAL_W - GAP * 4) / 5;
+
+  roundColors.forEach((rc, i) => {
+    const tx = 32 + i * (TILE_W + GAP);
+    const pickedCss = hsbToCss(rc.picked.h, rc.picked.s, rc.picked.b);
+    const targetCss = hsbToCss(rc.target.h, rc.target.s, rc.target.b);
+
+    ctx.save();
+    rrect(ctx, tx, TILE_TOP, TILE_W, TILE_H, 10);
+    ctx.clip();
+
+    // top-left triangle = picked colour
+    ctx.fillStyle = pickedCss;
+    ctx.beginPath();
+    ctx.moveTo(tx, TILE_TOP);
+    ctx.lineTo(tx + TILE_W, TILE_TOP);
+    ctx.lineTo(tx, TILE_TOP + TILE_H);
+    ctx.closePath();
+    ctx.fill();
+
+    // bottom-right triangle = target colour
+    ctx.fillStyle = targetCss;
+    ctx.beginPath();
+    ctx.moveTo(tx + TILE_W, TILE_TOP);
+    ctx.lineTo(tx + TILE_W, TILE_TOP + TILE_H);
+    ctx.lineTo(tx, TILE_TOP + TILE_H);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+
+    // Score label (white text with dark shadow for contrast)
+    const sc = roundScores[i].toFixed(1);
+    ctx.font = `700 12px ${FONT}`;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillText(sc, tx + 7, TILE_TOP + 19);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(sc, tx + 6, TILE_TOP + 18);
+  });
+
+  // Initials pill bottom-left
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  rrect(ctx, 32, SZ - 66, 58, 34, 17);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = `700 14px ${FONT}`;
+  ctx.textAlign = 'center';
+  ctx.fillText(playerInitials, 61, SZ - 43);
+  ctx.textAlign = 'left';
+
+  // Challenge CTA bottom-right
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = `500 13px ${FONT}`;
+  ctx.textAlign = 'right';
+  ctx.fillText('Can you beat me?', SZ - 32, SZ - 43);
+  ctx.textAlign = 'left';
+}
+
+function openShareModal() {
+  const total = roundScores.reduce((a, b) => a + b, 0);
+
+  // Post to local leaderboard (idempotent)
   const tab = easyMode ? 'easy' : 'hard';
   const key = `lb-scores-${tab}`;
   let existing = [];
   try { existing = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
-  existing.push({ initials: playerInitials, score: parseFloat(total.toFixed(2)), user: true });
-  localStorage.setItem(key, JSON.stringify(existing));
-  alert(`Score ${total.toFixed(2)} posted as "${playerInitials}"!`);
+  const scoreVal = parseFloat(total.toFixed(2));
+  if (!existing.some(e => e.user && e.score === scoreVal && e.initials === playerInitials)) {
+    existing.push({ initials: playerInitials, score: scoreVal, user: true });
+    localStorage.setItem(key, JSON.stringify(existing));
+  }
+
+  generateShareCanvas();
+
+  // Show native share button only if API available
+  document.getElementById('share-native-btn').style.display = navigator.share ? 'flex' : 'none';
+
+  document.getElementById('share-overlay').classList.add('active');
+}
+
+function closeShareModal() {
+  document.getElementById('share-overlay').classList.remove('active');
+}
+
+function getShareBlob() {
+  return new Promise(resolve =>
+    document.getElementById('share-canvas').toBlob(resolve, 'image/png')
+  );
+}
+
+function buildShareText(total) {
+  return `I scored ${total.toFixed(2)}/50 on DoppleHue! Can you beat me? Play at: ${window.location.href}`;
+}
+
+document.getElementById('total-post-btn').addEventListener('click', openShareModal);
+
+document.getElementById('share-modal-close').addEventListener('click', closeShareModal);
+document.getElementById('share-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('share-overlay')) closeShareModal();
+});
+
+document.getElementById('share-native-btn').addEventListener('click', async () => {
+  const total = roundScores.reduce((a, b) => a + b, 0);
+  const blob = await getShareBlob();
+  const file = new File([blob], 'dopplehue-score.png', { type: 'image/png' });
+  const shareData = navigator.canShare && navigator.canShare({ files: [file] })
+    ? { title: 'DoppleHue', text: buildShareText(total), files: [file] }
+    : { title: 'DoppleHue', text: buildShareText(total), url: window.location.href };
+  try { await navigator.share(shareData); } catch(e) { /* dismissed */ }
+});
+
+document.getElementById('share-wa-btn').addEventListener('click', () => {
+  const total = roundScores.reduce((a, b) => a + b, 0);
+  window.open(`https://wa.me/?text=${encodeURIComponent(buildShareText(total))}`, '_blank');
+});
+
+document.getElementById('share-x-btn').addEventListener('click', () => {
+  const total = roundScores.reduce((a, b) => a + b, 0);
+  const text = `I scored ${total.toFixed(2)}/50 on DoppleHue! Can you beat me?`;
+  window.open(
+    `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`,
+    '_blank'
+  );
+});
+
+document.getElementById('share-copy-btn').addEventListener('click', async () => {
+  const total = roundScores.reduce((a, b) => a + b, 0);
+  try {
+    await navigator.clipboard.writeText(buildShareText(total));
+    const btn = document.getElementById('share-copy-btn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  } catch(e) {}
+});
+
+document.getElementById('share-dl-btn').addEventListener('click', async () => {
+  const blob = await getShareBlob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dopplehue-score.png';
+  a.click();
+  URL.revokeObjectURL(url);
 });
 
 // ════════════════════════════════════════════════════
