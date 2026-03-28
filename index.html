@@ -725,6 +725,71 @@
       pointer-events: none;
     }
 
+    /* ════════════════════════════════════════
+       PASS SCREEN
+    ════════════════════════════════════════ */
+    #pass-screen {
+      background: #000; align-items: center; justify-content: center;
+      gap: 0; padding: 30px; text-align: center;
+    }
+    #pass-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 10px; }
+    #pass-headline { font-size: 22px; font-weight: 600; letter-spacing: -0.88px; color: #fff; margin-bottom: 4px; }
+    #pass-score-big { font-size: min(80px, 18vw); font-weight: 500; letter-spacing: -4px; color: #fff; line-height: 1; margin: 16px 0 4px; }
+    #pass-score-big span { color: rgba(255,255,255,0.25); }
+    #pass-sub { font-size: 13px; color: rgba(255,255,255,0.4); letter-spacing: -0.13px; margin-bottom: 36px; }
+    #pass-btn { height: 50px; padding: 0 36px; border-radius: 50px; background: #fff; border: none; color: #000; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.15s; }
+    #pass-btn:hover { transform: scale(1.02); }
+    #pass-btn:active { transform: scale(0.97); }
+
+    /* ════════════════════════════════════════
+       MULTIPLAYER RESULT SCREEN
+    ════════════════════════════════════════ */
+    #mp-result-screen { background: #111; padding: 0; }
+    #mp-result-close { position: absolute; top: 14px; right: 14px; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.12); border: none; color: rgba(255,255,255,0.7); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; }
+    #mp-result-close:hover { background: rgba(255,255,255,0.2); }
+    #mp-winner-label { position: absolute; top: 18px; left: 22px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+    #mp-result-body { display: flex; position: absolute; top: 46px; left: 0; right: 0; bottom: 60px; }
+    .mp-col { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 12px 12px 0; border-right: 1px solid rgba(255,255,255,0.07); }
+    .mp-col:last-child { border-right: none; }
+    .mp-col-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 4px; }
+    .mp-col-score { font-size: 48px; font-weight: 500; letter-spacing: -2.5px; color: #fff; line-height: 1; }
+    .mp-col-score.winner { color: #ffd60a; }
+    .mp-col-denom { color: rgba(255,255,255,0.25); font-size: 24px; }
+    .mp-tiles { display: flex; gap: 3px; margin-top: 10px; width: 100%; }
+    .mp-tile { flex: 1; height: 52px; border-radius: 6px; overflow: hidden; position: relative; }
+    .mp-tile-score { position: absolute; top: 4px; left: 4px; font-size: 9px; font-weight: 600; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    #mp-result-actions { position: absolute; bottom: 14px; left: 22px; right: 22px; }
+    #mp-play-again-btn { width: 100%; height: 44px; border-radius: 58px; background: #fff; border: none; color: #000; font-size: 13px; font-weight: 500; cursor: pointer; transition: transform 0.15s; }
+    #mp-play-again-btn:hover { transform: scale(1.01); }
+    #mp-play-again-btn:active { transform: scale(0.98); }
+
+    /* ════════════════════════════════════════
+       SHARE MODAL
+    ════════════════════════════════════════ */
+    #share-modal {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: flex-end; justify-content: center;
+      background: rgba(0,0,0,0.55);
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    #share-modal.open { opacity: 1; pointer-events: all; }
+    #share-sheet {
+      background: #1c1c1e; border-radius: 16px 16px 0 0;
+      width: 100%; max-width: 520px;
+      padding: 8px 0 max(24px, env(safe-area-inset-bottom, 24px));
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+    }
+    #share-modal.open #share-sheet { transform: translateY(0); }
+    .share-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.18); border-radius: 2px; margin: 8px auto 16px; }
+    #share-sheet-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); text-align: center; margin-bottom: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .share-icons-row { display: flex; gap: 8px; justify-content: center; padding: 0 20px; margin-bottom: 16px; }
+    .share-icon-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; background: none; border: none; cursor: pointer; flex: 1; max-width: 80px; }
+    .share-icon-circle { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+    .share-icon-label { font-size: 11px; color: rgba(255,255,255,0.55); letter-spacing: -0.11px; white-space: nowrap; }
+    .share-icon-btn:active .share-icon-circle { opacity: 0.7; }
+    .share-cancel-btn { display: block; width: calc(100% - 32px); margin: 8px 16px 0; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.08); border: none; color: rgba(255,255,255,0.6); font-size: 15px; font-weight: 500; cursor: pointer; letter-spacing: -0.15px; }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       html, body {
@@ -783,6 +848,19 @@
 
       .intro-mode-btn { width: 56px; height: 56px; }
       .intro-mode-btn svg { width: 22px; height: 22px; }
+
+      /* Mobile horizontal strips */
+      .strip-container {
+        left: 0; right: 0; bottom: 0; top: auto;
+        width: 100%; height: 88px;
+        flex-direction: row;
+        transform: translateY(100%);
+      }
+      #picker-screen.active .strip-container { transform: translateY(0); }
+      .strip { border-right: none; border-top: 1px solid rgba(255,255,255,0.08); }
+      #picker-label { left: 22px; bottom: auto; top: 56px; }
+      #picker-values { left: 22px; bottom: auto; top: 74px; }
+      #picker-screen .go-btn { bottom: 104px; }
     }
   </style>
 </head>
@@ -812,8 +890,8 @@
           <path d="M12 13.25C8.61 13.25 6.04 15.26 4.98 18.11C4.57 19.22 5.52 20.25 6.7 20.25H17.3C18.48 20.25 19.43 19.22 19.02 18.11C17.96 15.26 15.39 13.25 12 13.25Z"/>
         </svg>
       </button>
-      <!-- Multi (disabled) -->
-      <button class="intro-mode-btn" id="intro-multi" title="Multiplayer" style="opacity:0.4;cursor:not-allowed" disabled>
+      <!-- Multi -->
+      <button class="intro-mode-btn" id="intro-multi" title="Multiplayer">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9.5C13.3807 9.5 14.5 8.38071 14.5 7C14.5 5.61929 13.3807 4.5 12 4.5C10.6193 4.5 9.5 5.61929 9.5 7C9.5 8.38071 10.6193 9.5 12 9.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 11C5.60457 11 6.5 10.1046 6.5 9C6.5 7.89543 5.60457 7 4.5 7C3.39543 7 2.5 7.89543 2.5 9C2.5 10.1046 3.39543 11 4.5 11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.5 11C20.6046 11 21.5 10.1046 21.5 9C21.5 7.89543 20.6046 7 19.5 7C18.3954 7 17.5 7.89543 17.5 9C17.5 10.1046 18.3954 11 19.5 11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 19.25H15.5C16.4665 19.25 17.25 18.4665 17.25 17.5C17.25 14.6005 14.8995 12.25 12 12.25C9.1005 12.25 6.75 14.6005 6.75 17.5C6.75 18.4665 7.5335 19.25 8.5 19.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.75136 18.2498H2.50119C1.39662 18.2498 0.470354 17.3063 0.986733 16.3299C1.67862 15.0215 3.02859 14.0591 4.50136 13.812" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.25 18.2498H21.5C22.6046 18.2498 23.5308 17.3063 23.0145 16.3298C22.3227 15.0215 20.9728 14.0591 19.5 13.812" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <!-- Daily (disabled) -->
@@ -914,6 +992,71 @@
     <div id="lb-list"></div>
   </div>
 
+  <!-- ══════════════════ PASS SCREEN ══════════════════ -->
+  <div class="screen" id="pass-screen">
+    <div id="pass-eyebrow"></div>
+    <div id="pass-headline"></div>
+    <div id="pass-score-big"></div>
+    <div id="pass-sub">Hand the device to the next player</div>
+    <button id="pass-btn">Player 2 ready →</button>
+  </div>
+
+  <!-- ══════════════════ MULTIPLAYER RESULT ══════════════════ -->
+  <div class="screen" id="mp-result-screen">
+    <button id="mp-result-close">&#x2715;</button>
+    <div id="mp-winner-label"></div>
+    <div id="mp-result-body">
+      <div class="mp-col" id="mp-p1-col">
+        <div class="mp-col-label">Player 1</div>
+        <div class="mp-col-score"><span id="mp-p1-score">0.00</span><span class="mp-col-denom">/50</span></div>
+        <div class="mp-tiles" id="mp-p1-tiles"></div>
+      </div>
+      <div class="mp-col" id="mp-p2-col">
+        <div class="mp-col-label">Player 2</div>
+        <div class="mp-col-score"><span id="mp-p2-score">0.00</span><span class="mp-col-denom">/50</span></div>
+        <div class="mp-tiles" id="mp-p2-tiles"></div>
+      </div>
+    </div>
+    <div id="mp-result-actions">
+      <button id="mp-play-again-btn">Play again</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ SHARE MODAL ══════════════════ -->
+<div id="share-modal">
+  <div id="share-sheet">
+    <div class="share-handle"></div>
+    <div id="share-sheet-title">Share your score</div>
+    <div class="share-icons-row">
+      <button class="share-icon-btn" id="share-whatsapp">
+        <div class="share-icon-circle" style="background:#25D366">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        </div>
+        <span class="share-icon-label">WhatsApp</span>
+      </button>
+      <button class="share-icon-btn" id="share-twitter">
+        <div class="share-icon-circle" style="background:#000;border:1px solid rgba(255,255,255,0.15)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+        <span class="share-icon-label">X / Twitter</span>
+      </button>
+      <button class="share-icon-btn" id="share-native" style="display:none">
+        <div class="share-icon-circle" style="background:rgba(255,255,255,0.12)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        </div>
+        <span class="share-icon-label">More</span>
+      </button>
+      <button class="share-icon-btn" id="share-copy">
+        <div class="share-icon-circle" style="background:rgba(255,255,255,0.12)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </div>
+        <span class="share-icon-label" id="share-copy-label">Copy link</span>
+      </button>
+    </div>
+    <button class="share-cancel-btn" id="share-cancel">Cancel</button>
+  </div>
 </div>
 
 <script>
@@ -938,6 +1081,13 @@ let timerRaf   = null;
 let timerStart = null;
 let timerTotal = TIMER_EASY;
 let activeStrip = null;
+
+// Multiplayer state
+let isMultiplayer = false;
+let currentPlayer = 1;
+let sharedTargetColors = [];
+let player1Scores = [], player1Colors = [];
+let player2Scores = [], player2Colors = [];
 
 // ════════════════════════════════════════════════════
 //  COLOR MATH
@@ -1020,6 +1170,7 @@ introSolo.addEventListener('mouseleave', () => {
 });
 introSolo.addEventListener('click', () => {
   round = 1;
+  isMultiplayer = false;
   roundScores = [];
   roundColors = [];
   startCountdown();
@@ -1041,6 +1192,7 @@ toggleBtn.addEventListener('click', () => {
 });
 
 function showIntro() {
+  isMultiplayer = false;
   const introEl = document.getElementById('intro-screen');
   introEl.style.position = '';
   introEl.style.inset = '';
@@ -1053,7 +1205,7 @@ function showIntro() {
 //  COUNTDOWN → ready / set / go on black background
 // ════════════════════════════════════════════════════
 function startCountdown() {
-  targetHSB = randomHSB();
+  targetHSB = isMultiplayer ? sharedTargetColors[round - 1] : randomHSB();
 
   const cd      = document.getElementById('countdown-screen');
   const cdWord  = document.getElementById('countdown-word');
@@ -1152,6 +1304,8 @@ function startPicker() {
 function updatePicker() {
   const {h, s, b} = pickedHSB;
   const css = hsbToCss(h, s, b);
+  const isMobile = window.innerWidth <= 768;
+  const gDir = isMobile ? 'to right' : 'to bottom';
 
   document.getElementById('picker-bg').style.background = css;
   document.getElementById('picker-values').textContent   = hsbLabel(pickedHSB);
@@ -1164,7 +1318,7 @@ function updatePicker() {
   document.getElementById('picker-round').style.color  = textColor;
 
   // Hue strip: always rainbow
-  document.getElementById('h-strip').style.background = `linear-gradient(to bottom,
+  document.getElementById('h-strip').style.background = `linear-gradient(${gDir},
     hsl(0,100%,50%), hsl(30,100%,50%), hsl(60,100%,50%), hsl(90,100%,50%),
     hsl(120,100%,50%), hsl(150,100%,50%), hsl(180,100%,50%), hsl(210,100%,50%),
     hsl(240,100%,50%), hsl(270,100%,50%), hsl(300,100%,50%), hsl(330,100%,50%), hsl(360,100%,50%))`;
@@ -1172,11 +1326,11 @@ function updatePicker() {
   // Saturation strip: grey→full hue at current brightness
   const greyAtB  = hsbToCss(h, 0,   b);
   const fullAtB  = hsbToCss(h, 100, b);
-  document.getElementById('s-strip').style.background = `linear-gradient(to bottom, ${greyAtB}, ${fullAtB})`;
+  document.getElementById('s-strip').style.background = `linear-gradient(${gDir}, ${greyAtB}, ${fullAtB})`;
 
   // Brightness strip: white tint → black
   const fullHue  = hsbToCss(h, s, 100);
-  document.getElementById('b-strip').style.background = `linear-gradient(to bottom, ${fullHue}, #000)`;
+  document.getElementById('b-strip').style.background = `linear-gradient(${gDir}, ${fullHue}, #000)`;
 
   // Handle positions
   placeHandle('h-handle', 'h-strip', h / 360);
@@ -1187,8 +1341,13 @@ function updatePicker() {
 function placeHandle(handleId, stripId, fraction) {
   const strip  = document.getElementById(stripId);
   const handle = document.getElementById(handleId);
-  const h      = strip.offsetHeight;
-  handle.style.top = `${fraction * h}px`;
+  if (window.innerWidth <= 768) {
+    handle.style.left = fraction * strip.offsetWidth + 'px';
+    handle.style.top = '50%';
+  } else {
+    handle.style.top = fraction * strip.offsetHeight + 'px';
+    handle.style.left = '';
+  }
 }
 
 // Strip drag
@@ -1200,20 +1359,22 @@ function placeHandle(handleId, stripId, fraction) {
     e.preventDefault();
     el.setPointerCapture(e.pointerId);
     activeStrip = {el, dim};
-    applyStripDrag(el, dim, e.clientY);
+    applyStripDrag(el, dim, e.clientX, e.clientY);
   });
   el.addEventListener('pointermove', e => {
     if (!activeStrip || activeStrip.el !== el) return;
     e.preventDefault();
-    applyStripDrag(el, dim, e.clientY);
+    applyStripDrag(el, dim, e.clientX, e.clientY);
   });
   el.addEventListener('pointerup',     () => { activeStrip = null; });
   el.addEventListener('pointercancel', () => { activeStrip = null; });
 });
 
-function applyStripDrag(stripEl, dim, clientY) {
+function applyStripDrag(stripEl, dim, clientX, clientY) {
   const rect  = stripEl.getBoundingClientRect();
-  const frac  = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+  const frac = window.innerWidth <= 768
+    ? Math.max(0, Math.min(1, (clientX - rect.left) / rect.width))
+    : Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
   if (dim === 'h') pickedHSB.h = Math.round(frac * 360) % 360;
   if (dim === 's') pickedHSB.s = Math.round(frac * 100);
   if (dim === 'b') pickedHSB.b = Math.round((1 - frac) * 100);
@@ -1264,7 +1425,17 @@ function showResult() {
 
 document.getElementById('result-go').addEventListener('click', () => {
   if (round >= TOTAL_ROUNDS) {
-    showTotal();
+    if (isMultiplayer && currentPlayer === 1) {
+      player1Scores = [...roundScores];
+      player1Colors = [...roundColors];
+      showPassScreen();
+    } else if (isMultiplayer && currentPlayer === 2) {
+      player2Scores = [...roundScores];
+      player2Colors = [...roundColors];
+      showMpResult();
+    } else {
+      showTotal();
+    }
   } else {
     round++;
     startCountdown();
@@ -1351,7 +1522,41 @@ document.getElementById('total-post-btn').addEventListener('click', () => {
   try { existing = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
   existing.push({ initials: playerInitials, score: parseFloat(total.toFixed(2)), user: true });
   localStorage.setItem(key, JSON.stringify(existing));
-  alert(`Score ${total.toFixed(2)} posted as "${playerInitials}"!`);
+  openShareModal(total);
+});
+
+// ════════════════════════════════════════════════════
+//  SHARE MODAL
+// ════════════════════════════════════════════════════
+let shareTotal = 0;
+function openShareModal(total) {
+  shareTotal = total;
+  if (navigator.share) document.getElementById('share-native').style.display = 'flex';
+  document.getElementById('share-modal').classList.add('open');
+}
+function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
+function buildShareText(total) {
+  return `I scored ${total.toFixed(2)}/50 on DoppleHue (${easyMode?'Easy':'Hard'} mode). Can you beat me? dopplehue.com`;
+}
+document.getElementById('share-cancel').addEventListener('click', closeShareModal);
+document.getElementById('share-modal').addEventListener('click', e => { if(e.target===document.getElementById('share-modal')) closeShareModal(); });
+document.getElementById('share-whatsapp').addEventListener('click', () => {
+  window.open(`https://wa.me/?text=${encodeURIComponent(buildShareText(shareTotal))}`, '_blank');
+  closeShareModal();
+});
+document.getElementById('share-twitter').addEventListener('click', () => {
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(buildShareText(shareTotal))}`, '_blank');
+  closeShareModal();
+});
+document.getElementById('share-native').addEventListener('click', async () => {
+  try { await navigator.share({ title:'DoppleHue', text:buildShareText(shareTotal), url:'https://dopplehue.com' }); closeShareModal(); } catch(e){}
+});
+document.getElementById('share-copy').addEventListener('click', () => {
+  const text = buildShareText(shareTotal);
+  const lbl = document.getElementById('share-copy-label');
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+    .catch(() => { const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); return Promise.resolve(); })
+    .then(() => { lbl.textContent='Copied!'; setTimeout(()=>lbl.textContent='Copy link',2000); });
 });
 
 // ════════════════════════════════════════════════════
@@ -1448,6 +1653,82 @@ document.getElementById('lb-close').addEventListener('click', showIntro);
 
 document.querySelectorAll('.lb-tab').forEach(btn => {
   btn.addEventListener('click', () => renderLeaderboard(btn.dataset.tab));
+});
+
+// ════════════════════════════════════════════════════
+//  MULTIPLAYER
+// ════════════════════════════════════════════════════
+document.getElementById('intro-multi').addEventListener('mouseenter', () => {
+  modeLabel.textContent = "Two can play at that.";
+});
+document.getElementById('intro-multi').addEventListener('mouseleave', () => {
+  modeLabel.textContent = 'Solo or multiplayer?';
+});
+document.getElementById('intro-multi').addEventListener('click', () => {
+  round = 1; isMultiplayer = true; currentPlayer = 1;
+  player1Scores=[]; player1Colors=[]; player2Scores=[]; player2Colors=[];
+  roundScores=[]; roundColors=[];
+  sharedTargetColors = Array.from({length: TOTAL_ROUNDS}, randomHSB);
+  startCountdown();
+});
+
+function showPassScreen() {
+  const p1Total = player1Scores.reduce((a,b)=>a+b,0);
+  document.getElementById('pass-eyebrow').textContent = 'Player 1 done';
+  document.getElementById('pass-headline').textContent = 'Pass it over';
+  document.getElementById('pass-score-big').innerHTML = `${p1Total.toFixed(2)}<span>/50</span>`;
+  document.getElementById('pass-sub').textContent = 'Hand the device to Player 2';
+  showScreen('pass-screen');
+}
+
+document.getElementById('pass-btn').addEventListener('click', () => {
+  round=1; roundScores=[]; roundColors=[]; currentPlayer=2;
+  startCountdown();
+});
+
+function showMpResult() {
+  const p1Total = player1Scores.reduce((a,b)=>a+b,0);
+  const p2Total = player2Scores.reduce((a,b)=>a+b,0);
+  const p1Won = p1Total > p2Total, tie = p1Total === p2Total;
+  document.getElementById('mp-winner-label').textContent = tie ? "It's a tie!" : `Player ${p1Won?1:2} wins! 🎉`;
+  document.getElementById('mp-p1-score').textContent = p1Total.toFixed(2);
+  document.getElementById('mp-p2-score').textContent = p2Total.toFixed(2);
+  document.querySelector('#mp-p1-col .mp-col-score').classList.toggle('winner', p1Won && !tie);
+  document.querySelector('#mp-p2-col .mp-col-score').classList.toggle('winner', !p1Won && !tie);
+  buildMpTiles('mp-p1-tiles', player1Scores, player1Colors);
+  buildMpTiles('mp-p2-tiles', player2Scores, player2Colors);
+  if (window.innerWidth > 768) document.getElementById('game-container').style.height = '390px';
+  showScreen('mp-result-screen');
+}
+
+function buildMpTiles(containerId, scores, colors) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  colors.forEach((rc,i) => {
+    const tile = document.createElement('div');
+    tile.className = 'mp-tile';
+    tile.style.background = `linear-gradient(to bottom right, ${hsbToCss(rc.picked.h,rc.picked.s,rc.picked.b)} 50%, ${hsbToCss(rc.target.h,rc.target.s,rc.target.b)} 50%)`;
+    const s = document.createElement('div');
+    s.className = 'mp-tile-score';
+    s.textContent = scores[i].toFixed(2);
+    tile.appendChild(s);
+    el.appendChild(tile);
+  });
+}
+
+document.getElementById('mp-result-close').addEventListener('click', () => {
+  isMultiplayer=false; currentPlayer=1;
+  player1Scores=[]; player1Colors=[]; player2Scores=[]; player2Colors=[];
+  roundScores=[]; roundColors=[]; round=1;
+  showIntro();
+});
+
+document.getElementById('mp-play-again-btn').addEventListener('click', () => {
+  round=1; currentPlayer=1;
+  player1Scores=[]; player1Colors=[]; player2Scores=[]; player2Colors=[];
+  roundScores=[]; roundColors=[];
+  sharedTargetColors = Array.from({length: TOTAL_ROUNDS}, randomHSB);
+  startCountdown();
 });
 </script>
 </body>
