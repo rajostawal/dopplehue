@@ -573,6 +573,398 @@
     #total-post-btn:hover { transform: scale(1.01); }
     #total-post-btn:active { transform: scale(0.98); }
 
+    /* ════════════════════════════════════════
+       SHARE MODAL
+    ════════════════════════════════════════ */
+    #share-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    #share-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #share-modal {
+      background: #1c1c1e;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 20px 28px;
+      width: min(460px, 100vw);
+      max-height: 92vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      color: #fff;
+      transform: translateY(40px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #share-overlay.active #share-modal {
+      transform: translateY(0);
+    }
+    #share-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #share-modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    #share-modal-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    #share-modal-close:hover { background: rgba(255,255,255,0.2); }
+    #share-preview-wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #share-canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    #share-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .share-btn {
+      height: 50px;
+      border-radius: 14px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform 0.15s, filter 0.15s;
+      letter-spacing: -0.2px;
+      font-family: inherit;
+    }
+    .share-btn:hover { filter: brightness(1.12); }
+    .share-btn:active { transform: scale(0.96); }
+    .share-btn-native {
+      grid-column: 1 / -1;
+      background: #fff;
+      color: #000;
+      height: 54px;
+      font-size: 14px;
+    }
+    .share-btn-whatsapp { background: #25D366; color: #fff; }
+    .share-btn-twitter  { background: #000; color: #fff; border: 1.5px solid rgba(255,255,255,0.15); }
+    .share-btn-copy     { background: rgba(255,255,255,0.1); color: #fff; }
+    .share-btn-download { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* ════════════════════════════════════════
+       MULTIPLAYER — SETUP
+    ════════════════════════════════════════ */
+    #mp-setup-screen {
+      background: #111;
+      justify-content: flex-start;
+      padding: 22px 26px 32px;
+    }
+    #mp-setup-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+      font-size: 15px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    #mp-setup-close:hover { background: rgba(255,255,255,0.18); }
+    #mp-setup-title {
+      font-size: 34px;
+      font-weight: 500;
+      letter-spacing: -1.5px;
+      color: #fff;
+      margin-top: 32px;
+      line-height: 1;
+    }
+    #mp-setup-subtitle {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.45);
+      margin-top: 10px;
+      line-height: 1.45;
+      letter-spacing: -0.14px;
+      max-width: 300px;
+    }
+    #mp-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .mp-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+    .mp-field input {
+      width: 100%;
+      height: 52px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 0 16px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+      -webkit-appearance: none;
+    }
+    .mp-field input::placeholder { color: rgba(255,255,255,0.2); }
+    .mp-field input:focus {
+      border-color: rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.09);
+    }
+    #mp-start-btn {
+      width: 100%;
+      height: 54px;
+      border-radius: 14px;
+      border: none;
+      background: #fff;
+      color: #000;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: -0.2px;
+      margin-top: 24px;
+      transition: transform 0.15s;
+    }
+    #mp-start-btn:hover  { transform: scale(1.01); }
+    #mp-start-btn:active { transform: scale(0.97); }
+
+    /* ════════════════════════════════════════
+       MULTIPLAYER — HANDOFF
+    ════════════════════════════════════════ */
+    #mp-handoff-screen {
+      background: #111;
+      justify-content: flex-start;
+      padding: 36px 26px 32px;
+    }
+    #mp-handoff-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+    }
+    #mp-handoff-score-wrap {
+      font-size: min(84px, 18vw);
+      font-weight: 400;
+      letter-spacing: -4px;
+      line-height: 1;
+      color: #fff;
+      margin-top: 8px;
+    }
+    #mp-handoff-score-denom {
+      font-size: 34px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: -1px;
+    }
+    #mp-handoff-feedback {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      margin-top: 8px;
+      letter-spacing: -0.13px;
+    }
+    #mp-handoff-tiles {
+      display: flex;
+      gap: 5px;
+      height: 68px;
+      margin-top: 18px;
+    }
+    .mp-handoff-tile {
+      flex: 1;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    #mp-handoff-cta {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: -0.15px;
+      line-height: 1.45;
+      margin-top: auto;
+      padding-top: 24px;
+    }
+    #mp-handoff-cta strong { color: #fff; font-weight: 600; }
+    #mp-p2-start-btn {
+      width: 100%;
+      height: 54px;
+      border-radius: 14px;
+      border: none;
+      background: #fff;
+      color: #000;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: -0.2px;
+      margin-top: 14px;
+      transition: transform 0.15s;
+    }
+    #mp-p2-start-btn:hover  { transform: scale(1.01); }
+    #mp-p2-start-btn:active { transform: scale(0.97); }
+
+    /* ════════════════════════════════════════
+       MULTIPLAYER — FINAL
+    ════════════════════════════════════════ */
+    #mp-final-screen {
+      background: #111;
+      justify-content: flex-start;
+      padding: 22px 22px 28px;
+      overflow-y: auto;
+    }
+    #mp-final-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+      font-size: 15px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-family: inherit;
+      z-index: 10;
+      transition: background 0.15s;
+    }
+    #mp-final-close:hover { background: rgba(255,255,255,0.18); }
+    #mp-final-winner {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+      margin-top: 32px;
+    }
+    #mp-final-winner span { color: #fff; }
+    #mp-final-cards {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .mp-final-card {
+      flex: 1;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      padding: 14px 12px 12px;
+      border: 1.5px solid rgba(255,255,255,0.07);
+      transition: border-color 0.35s, background 0.35s;
+    }
+    .mp-final-card.winner {
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+    }
+    .mp-fc-name {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mp-final-card.winner .mp-fc-name { color: rgba(255,255,255,0.65); }
+    .mp-fc-score {
+      font-size: 40px;
+      font-weight: 400;
+      letter-spacing: -2px;
+      color: #fff;
+      line-height: 1.05;
+      margin-top: 4px;
+    }
+    .mp-fc-denom { font-size: 16px; color: rgba(255,255,255,0.22); letter-spacing: 0; }
+    .mp-fc-tiles {
+      display: flex;
+      gap: 3px;
+      height: 32px;
+      margin-top: 10px;
+    }
+    .mp-fc-tile { flex: 1; border-radius: 4px; overflow: hidden; }
+    #mp-final-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    #mp-final-again {
+      flex: 1;
+      height: 50px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(255,255,255,0.18);
+      background: transparent;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: -0.2px;
+      transition: background 0.15s;
+    }
+    #mp-final-again:hover { background: rgba(255,255,255,0.07); }
+    #mp-final-share {
+      flex: 1;
+      height: 50px;
+      border-radius: 14px;
+      border: none;
+      background: #fff;
+      color: #000;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: -0.2px;
+      transition: transform 0.15s;
+    }
+    #mp-final-share:hover  { transform: scale(1.01); }
+    #mp-final-share:active { transform: scale(0.97); }
+
     #intro-lb-btn {
       width: 40px;
       height: 40px;
@@ -812,8 +1204,8 @@
           <path d="M12 13.25C8.61 13.25 6.04 15.26 4.98 18.11C4.57 19.22 5.52 20.25 6.7 20.25H17.3C18.48 20.25 19.43 19.22 19.02 18.11C17.96 15.26 15.39 13.25 12 13.25Z"/>
         </svg>
       </button>
-      <!-- Multi (disabled) -->
-      <button class="intro-mode-btn" id="intro-multi" title="Multiplayer" style="opacity:0.4;cursor:not-allowed" disabled>
+      <!-- Multi -->
+      <button class="intro-mode-btn" id="intro-multi" title="Multiplayer">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9.5C13.3807 9.5 14.5 8.38071 14.5 7C14.5 5.61929 13.3807 4.5 12 4.5C10.6193 4.5 9.5 5.61929 9.5 7C9.5 8.38071 10.6193 9.5 12 9.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 11C5.60457 11 6.5 10.1046 6.5 9C6.5 7.89543 5.60457 7 4.5 7C3.39543 7 2.5 7.89543 2.5 9C2.5 10.1046 3.39543 11 4.5 11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.5 11C20.6046 11 21.5 10.1046 21.5 9C21.5 7.89543 20.6046 7 19.5 7C18.3954 7 17.5 7.89543 17.5 9C17.5 10.1046 18.3954 11 19.5 11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 19.25H15.5C16.4665 19.25 17.25 18.4665 17.25 17.5C17.25 14.6005 14.8995 12.25 12 12.25C9.1005 12.25 6.75 14.6005 6.75 17.5C6.75 18.4665 7.5335 19.25 8.5 19.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.75136 18.2498H2.50119C1.39662 18.2498 0.470354 17.3063 0.986733 16.3299C1.67862 15.0215 3.02859 14.0591 4.50136 13.812" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.25 18.2498H21.5C22.6046 18.2498 23.5308 17.3063 23.0145 16.3298C22.3227 15.0215 20.9728 14.0591 19.5 13.812" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <!-- Daily (disabled) -->
@@ -914,6 +1306,93 @@
     <div id="lb-list"></div>
   </div>
 
+</div>
+
+<!-- ══════════════════ MP SETUP ══════════════════ -->
+<div class="screen" id="mp-setup-screen">
+  <button id="mp-setup-close">&#x2715;</button>
+  <div id="mp-setup-title">Multiplayer</div>
+  <div id="mp-setup-subtitle">Same five colors, two players. Highest total wins.</div>
+  <div id="mp-fields">
+    <div class="mp-field">
+      <label for="mp-p1-input">Player 1</label>
+      <input type="text" id="mp-p1-input" maxlength="16" placeholder="Enter name" autocomplete="off" autocorrect="off" spellcheck="false" />
+    </div>
+    <div class="mp-field">
+      <label for="mp-p2-input">Player 2</label>
+      <input type="text" id="mp-p2-input" maxlength="16" placeholder="Enter name" autocomplete="off" autocorrect="off" spellcheck="false" />
+    </div>
+  </div>
+  <button id="mp-start-btn">Start game</button>
+</div>
+
+<!-- ══════════════════ MP HANDOFF ══════════════════ -->
+<div class="screen" id="mp-handoff-screen">
+  <div id="mp-handoff-label">Player 1 scored</div>
+  <div id="mp-handoff-score-wrap">
+    <span id="mp-handoff-score-main">—</span><span id="mp-handoff-score-denom">/50</span>
+  </div>
+  <div id="mp-handoff-feedback"></div>
+  <div id="mp-handoff-tiles"></div>
+  <div id="mp-handoff-cta">Hand the device to <strong id="mp-handoff-p2name">Player 2</strong></div>
+  <button id="mp-p2-start-btn">Start Player 2's turn</button>
+</div>
+
+<!-- ══════════════════ MP FINAL ══════════════════ -->
+<div class="screen" id="mp-final-screen">
+  <button id="mp-final-close">&#x2715;</button>
+  <div id="mp-final-winner"></div>
+  <div id="mp-final-cards">
+    <div class="mp-final-card" id="mp-fc-0">
+      <div class="mp-fc-name"></div>
+      <div class="mp-fc-score"></div>
+      <div class="mp-fc-tiles"></div>
+    </div>
+    <div class="mp-final-card" id="mp-fc-1">
+      <div class="mp-fc-name"></div>
+      <div class="mp-fc-score"></div>
+      <div class="mp-fc-tiles"></div>
+    </div>
+  </div>
+  <div id="mp-final-actions">
+    <button id="mp-final-again">Play again</button>
+    <button id="mp-final-share">Share result</button>
+  </div>
+</div>
+
+<!-- ══════════════════ SHARE MODAL ══════════════════ -->
+<div id="share-overlay">
+  <div id="share-modal" role="dialog" aria-modal="true" aria-label="Share your score">
+    <div id="share-modal-header">
+      <span id="share-modal-title">Challenge a friend</span>
+      <button id="share-modal-close" aria-label="Close">&#x2715;</button>
+    </div>
+    <div id="share-preview-wrap">
+      <canvas id="share-canvas"></canvas>
+    </div>
+    <div id="share-btns">
+      <button class="share-btn share-btn-native" id="share-native-btn" style="display:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        Share
+      </button>
+      <button class="share-btn share-btn-whatsapp" id="share-wa-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        WhatsApp
+      </button>
+      <button class="share-btn share-btn-twitter" id="share-x-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X / Twitter
+      </button>
+      <button class="share-btn share-btn-copy" id="share-copy-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy link
+      </button>
+      <button class="share-btn share-btn-download" id="share-dl-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Save image
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1041,6 +1520,8 @@ toggleBtn.addEventListener('click', () => {
 });
 
 function showIntro() {
+  multiMode = false;
+  mpCurrentPlayer = 0;
   const introEl = document.getElementById('intro-screen');
   introEl.style.position = '';
   introEl.style.inset = '';
@@ -1053,13 +1534,15 @@ function showIntro() {
 //  COUNTDOWN → ready / set / go on black background
 // ════════════════════════════════════════════════════
 function startCountdown() {
-  targetHSB = randomHSB();
+  targetHSB = multiMode ? {...mpColors[round - 1]} : randomHSB();
 
   const cd      = document.getElementById('countdown-screen');
   const cdWord  = document.getElementById('countdown-word');
   const cdRound = document.getElementById('countdown-round');
 
-  cdRound.textContent = `${round} / ${TOTAL_ROUNDS}`;
+  cdRound.textContent = multiMode
+    ? `${mpPlayers[mpCurrentPlayer].name}  ·  ${round} / ${TOTAL_ROUNDS}`
+    : `${round} / ${TOTAL_ROUNDS}`;
   cd.style.backgroundColor = '#000';
 
   const words = ['ready', 'set', 'go'];
@@ -1100,7 +1583,9 @@ function startMemorize() {
   const timerDec = document.getElementById('timer-dec');
 
   memColor.style.background = hsbToCss(targetHSB.h, targetHSB.s, targetHSB.b);
-  memRound.textContent = `${round} / ${TOTAL_ROUNDS}`;
+  memRound.textContent = multiMode
+    ? `${mpPlayers[mpCurrentPlayer].name}  ·  ${round} / ${TOTAL_ROUNDS}`
+    : `${round} / ${TOTAL_ROUNDS}`;
 
   timerTotal = easyMode ? TIMER_EASY : TIMER_HARD;
   timerStart = null;
@@ -1141,7 +1626,9 @@ function startPicker() {
     b: randInt(30, 80),
   };
 
-  document.getElementById('picker-round').textContent = `${round} / ${TOTAL_ROUNDS}`;
+  document.getElementById('picker-round').textContent = multiMode
+    ? `${mpPlayers[mpCurrentPlayer].name}  ·  ${round} / ${TOTAL_ROUNDS}`
+    : `${round} / ${TOTAL_ROUNDS}`;
   updatePicker();
   showScreen('picker-screen');
 
@@ -1241,7 +1728,9 @@ function showResult() {
   document.querySelector('.score-int').textContent = si;
   document.querySelector('.score-dec').textContent = sd;
   document.getElementById('result-feedback').textContent = scoreFeedback(score);
-  document.getElementById('result-round').textContent    = `${round} / ${TOTAL_ROUNDS}`;
+  document.getElementById('result-round').textContent    = multiMode
+    ? `${mpPlayers[mpCurrentPlayer].name}  ·  ${round} / ${TOTAL_ROUNDS}`
+    : `${round} / ${TOTAL_ROUNDS}`;
 
   // Text color for each half
   const setHalfColor = (halfId, h, s, b) => {
@@ -1264,7 +1753,17 @@ function showResult() {
 
 document.getElementById('result-go').addEventListener('click', () => {
   if (round >= TOTAL_ROUNDS) {
-    showTotal();
+    if (multiMode && mpCurrentPlayer === 0) {
+      mpPlayers[0].scores = [...roundScores];
+      mpPlayers[0].colors = [...roundColors];
+      showMpHandoff();
+    } else if (multiMode && mpCurrentPlayer === 1) {
+      mpPlayers[1].scores = [...roundScores];
+      mpPlayers[1].colors = [...roundColors];
+      showMpFinal();
+    } else {
+      showTotal();
+    }
   } else {
     round++;
     startCountdown();
@@ -1343,15 +1842,237 @@ document.getElementById('total-initials-btn').addEventListener('click', () => {
   }
 });
 
-document.getElementById('total-post-btn').addEventListener('click', () => {
+// ════════════════════════════════════════════════════
+//  SHARE MODAL
+// ════════════════════════════════════════════════════
+function rrect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function generateShareCanvas() {
+  if (multiMode) { generateMpShareCanvas(); return; }
   const total = roundScores.reduce((a, b) => a + b, 0);
-  const tab = easyMode ? 'easy' : 'hard';
-  const key = `lb-scores-${tab}`;
-  let existing = [];
-  try { existing = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
-  existing.push({ initials: playerInitials, score: parseFloat(total.toFixed(2)), user: true });
-  localStorage.setItem(key, JSON.stringify(existing));
-  alert(`Score ${total.toFixed(2)} posted as "${playerInitials}"!`);
+  const SZ = 600;
+  const canvas = document.getElementById('share-canvas');
+  canvas.width = SZ;
+  canvas.height = SZ;
+  const ctx = canvas.getContext('2d');
+  const FONT = '-apple-system, "Inter", system-ui, sans-serif';
+
+  // Background
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0, 0, SZ, SZ);
+
+  // Subtle grid texture
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < SZ; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, SZ); ctx.stroke(); }
+  for (let y = 0; y < SZ; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(SZ, y); ctx.stroke(); }
+
+  // Branding
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = `600 15px ${FONT}`;
+  ctx.fillText('DoppleHue', 32, 46);
+
+  // Mode pill
+  const modeLabel = easyMode ? 'Easy' : 'Hard';
+  ctx.font = `600 12px ${FONT}`;
+  const pillW = ctx.measureText(modeLabel).width + 22;
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  rrect(ctx, SZ - pillW - 24, 30, pillW, 24, 12);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.fillText(modeLabel, SZ - pillW - 13, 46);
+
+  // Big score
+  const [si, sd] = total.toFixed(2).split('.');
+  ctx.fillStyle = '#fff';
+  ctx.font = `400 108px ${FONT}`;
+  const scoreStr = `${si}.${sd}`;
+  const scoreW = ctx.measureText(scoreStr).width;
+  ctx.fillText(scoreStr, 32, 172);
+
+  // /50 suffix
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.font = `400 42px ${FONT}`;
+  ctx.fillText('/50', 32 + scoreW + 4, 172);
+
+  // Percentile
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = `500 14px ${FONT}`;
+  ctx.fillText(`Top ${calcPercentile(total)} of all players`, 32, 204);
+
+  // Description
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = `500 14px ${FONT}`;
+  ctx.fillText(totalFeedback(total), 32, 228);
+
+  // Color tiles
+  const TILE_TOP = 262;
+  const TILE_H   = 220;
+  const GAP      = 8;
+  const TOTAL_W  = SZ - 64;
+  const TILE_W   = (TOTAL_W - GAP * 4) / 5;
+
+  roundColors.forEach((rc, i) => {
+    const tx = 32 + i * (TILE_W + GAP);
+    const pickedCss = hsbToCss(rc.picked.h, rc.picked.s, rc.picked.b);
+    const targetCss = hsbToCss(rc.target.h, rc.target.s, rc.target.b);
+
+    ctx.save();
+    rrect(ctx, tx, TILE_TOP, TILE_W, TILE_H, 10);
+    ctx.clip();
+
+    // top-left triangle = picked colour
+    ctx.fillStyle = pickedCss;
+    ctx.beginPath();
+    ctx.moveTo(tx, TILE_TOP);
+    ctx.lineTo(tx + TILE_W, TILE_TOP);
+    ctx.lineTo(tx, TILE_TOP + TILE_H);
+    ctx.closePath();
+    ctx.fill();
+
+    // bottom-right triangle = target colour
+    ctx.fillStyle = targetCss;
+    ctx.beginPath();
+    ctx.moveTo(tx + TILE_W, TILE_TOP);
+    ctx.lineTo(tx + TILE_W, TILE_TOP + TILE_H);
+    ctx.lineTo(tx, TILE_TOP + TILE_H);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+
+    // Score label (white text with dark shadow for contrast)
+    const sc = roundScores[i].toFixed(1);
+    ctx.font = `700 12px ${FONT}`;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillText(sc, tx + 7, TILE_TOP + 19);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(sc, tx + 6, TILE_TOP + 18);
+  });
+
+  // Initials pill bottom-left
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  rrect(ctx, 32, SZ - 66, 58, 34, 17);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = `700 14px ${FONT}`;
+  ctx.textAlign = 'center';
+  ctx.fillText(playerInitials, 61, SZ - 43);
+  ctx.textAlign = 'left';
+
+  // Challenge CTA bottom-right
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = `500 13px ${FONT}`;
+  ctx.textAlign = 'right';
+  ctx.fillText('Can you beat me?', SZ - 32, SZ - 43);
+  ctx.textAlign = 'left';
+}
+
+function openShareModal() {
+  if (!multiMode) {
+    // Solo: post to local leaderboard (idempotent)
+    const total    = roundScores.reduce((a, b) => a + b, 0);
+    const tab      = easyMode ? 'easy' : 'hard';
+    const key      = `lb-scores-${tab}`;
+    let existing   = [];
+    try { existing = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+    const scoreVal = parseFloat(total.toFixed(2));
+    if (!existing.some(e => e.user && e.score === scoreVal && e.initials === playerInitials)) {
+      existing.push({ initials: playerInitials, score: scoreVal, user: true });
+      localStorage.setItem(key, JSON.stringify(existing));
+    }
+  }
+
+  generateShareCanvas();
+
+  document.getElementById('share-native-btn').style.display = navigator.share ? 'flex' : 'none';
+  document.getElementById('share-overlay').classList.add('active');
+}
+
+function closeShareModal() {
+  document.getElementById('share-overlay').classList.remove('active');
+}
+
+function getShareBlob() {
+  return new Promise(resolve =>
+    document.getElementById('share-canvas').toBlob(resolve, 'image/png')
+  );
+}
+
+function buildShareText() {
+  if (multiMode) {
+    const totals = mpPlayers.map(p => p.scores.reduce((a, b) => a + b, 0));
+    const diff   = totals[0] - totals[1];
+    const tie    = Math.abs(diff) < 0.005;
+    const winIdx = tie ? -1 : (diff > 0 ? 0 : 1);
+    const result = tie
+      ? `It was a tie! Both scored ${totals[0].toFixed(2)}/50`
+      : `${mpPlayers[winIdx].name} won ${totals[winIdx].toFixed(2)} vs ${totals[1 - winIdx].toFixed(2)}/50`;
+    return `We played DoppleHue! ${result}. Can you do better? Play at: ${window.location.href}`;
+  }
+  const total = roundScores.reduce((a, b) => a + b, 0);
+  return `I scored ${total.toFixed(2)}/50 on DoppleHue! Can you beat me? Play at: ${window.location.href}`;
+}
+
+document.getElementById('total-post-btn').addEventListener('click', openShareModal);
+
+document.getElementById('share-modal-close').addEventListener('click', closeShareModal);
+document.getElementById('share-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('share-overlay')) closeShareModal();
+});
+
+document.getElementById('share-native-btn').addEventListener('click', async () => {
+  const blob = await getShareBlob();
+  const file = new File([blob], 'dopplehue-score.png', { type: 'image/png' });
+  const text = buildShareText();
+  const shareData = navigator.canShare && navigator.canShare({ files: [file] })
+    ? { title: 'DoppleHue', text, files: [file] }
+    : { title: 'DoppleHue', text, url: window.location.href };
+  try { await navigator.share(shareData); } catch(e) { /* dismissed */ }
+});
+
+document.getElementById('share-wa-btn').addEventListener('click', () => {
+  window.open(`https://wa.me/?text=${encodeURIComponent(buildShareText())}`, '_blank');
+});
+
+document.getElementById('share-x-btn').addEventListener('click', () => {
+  const text = buildShareText().replace(/ Play at:.*$/, '');
+  window.open(
+    `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`,
+    '_blank'
+  );
+});
+
+document.getElementById('share-copy-btn').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(buildShareText());
+    const btn = document.getElementById('share-copy-btn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  } catch(e) {}
+});
+
+document.getElementById('share-dl-btn').addEventListener('click', async () => {
+  const blob = await getShareBlob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dopplehue-score.png';
+  a.click();
+  URL.revokeObjectURL(url);
 });
 
 // ════════════════════════════════════════════════════
@@ -1449,6 +2170,269 @@ document.getElementById('lb-close').addEventListener('click', showIntro);
 document.querySelectorAll('.lb-tab').forEach(btn => {
   btn.addEventListener('click', () => renderLeaderboard(btn.dataset.tab));
 });
+
+// ════════════════════════════════════════════════════
+//  MULTIPLAYER
+// ════════════════════════════════════════════════════
+let multiMode       = false;
+let mpColors        = [];   // 5 pre-generated HSB colors shared by both players
+let mpCurrentPlayer = 0;    // 0 = Player 1, 1 = Player 2
+let mpPlayers       = [
+  { name: 'Player 1', scores: [], colors: [] },
+  { name: 'Player 2', scores: [], colors: [] },
+];
+
+// ── Intro: enable button + hover ──────────────────
+const introMulti = document.getElementById('intro-multi');
+
+introMulti.addEventListener('mouseenter', () => { modeLabel.textContent = 'Bring a friend.'; });
+introMulti.addEventListener('mouseleave', () => { modeLabel.textContent = 'Solo or multiplayer?'; });
+introMulti.addEventListener('click', () => {
+  if (window.innerWidth > 768) document.getElementById('game-container').style.height = '430px';
+  const introEl = document.getElementById('intro-screen');
+  introEl.style.position = 'absolute';
+  introEl.style.inset = '0';
+  showScreen('mp-setup-screen');
+  document.getElementById('mp-p1-input').focus();
+});
+
+// ── Setup screen ──────────────────────────────────
+document.getElementById('mp-setup-close').addEventListener('click', showIntro);
+
+document.getElementById('mp-start-btn').addEventListener('click', () => {
+  const p1name = document.getElementById('mp-p1-input').value.trim() || 'Player 1';
+  const p2name = document.getElementById('mp-p2-input').value.trim() || 'Player 2';
+
+  mpPlayers[0] = { name: p1name, scores: [], colors: [] };
+  mpPlayers[1] = { name: p2name, scores: [], colors: [] };
+
+  // Pre-generate the 5 colors both players will share
+  mpColors = Array.from({ length: TOTAL_ROUNDS }, randomHSB);
+
+  multiMode       = true;
+  mpCurrentPlayer = 0;
+  round           = 1;
+  roundScores     = [];
+  roundColors     = [];
+
+  startCountdown();
+});
+
+// Allow Enter key in name inputs to proceed
+document.getElementById('mp-p2-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('mp-start-btn').click();
+});
+
+// ── Handoff screen ────────────────────────────────
+function showMpHandoff() {
+  const p1      = mpPlayers[0];
+  const total   = p1.scores.reduce((a, b) => a + b, 0);
+  const [si, sd] = total.toFixed(2).split('.');
+
+  document.getElementById('mp-handoff-label').textContent = `${p1.name} scored`;
+  document.getElementById('mp-handoff-score-main').textContent = `${si}.${sd}`;
+  document.getElementById('mp-handoff-feedback').textContent = totalFeedback(total);
+  document.getElementById('mp-handoff-p2name').textContent = mpPlayers[1].name;
+  document.getElementById('mp-p2-start-btn').textContent = `Start ${mpPlayers[1].name}'s turn →`;
+
+  const tilesEl = document.getElementById('mp-handoff-tiles');
+  tilesEl.innerHTML = '';
+  p1.colors.forEach(rc => {
+    const tile = document.createElement('div');
+    tile.className = 'mp-handoff-tile';
+    tile.style.background = `linear-gradient(to bottom right,
+      ${hsbToCss(rc.picked.h, rc.picked.s, rc.picked.b)} 50%,
+      ${hsbToCss(rc.target.h, rc.target.s, rc.target.b)} 50%)`;
+    tilesEl.appendChild(tile);
+  });
+
+  if (window.innerWidth > 768) document.getElementById('game-container').style.height = '430px';
+  showScreen('mp-handoff-screen');
+}
+
+document.getElementById('mp-p2-start-btn').addEventListener('click', () => {
+  mpCurrentPlayer = 1;
+  round       = 1;
+  roundScores = [];
+  roundColors = [];
+  startCountdown();
+});
+
+// ── Final screen ──────────────────────────────────
+function buildMpTiles(container, player) {
+  container.innerHTML = '';
+  player.colors.forEach(rc => {
+    const tile = document.createElement('div');
+    tile.className = 'mp-fc-tile';
+    tile.style.background = `linear-gradient(to bottom right,
+      ${hsbToCss(rc.picked.h, rc.picked.s, rc.picked.b)} 50%,
+      ${hsbToCss(rc.target.h, rc.target.s, rc.target.b)} 50%)`;
+    container.appendChild(tile);
+  });
+}
+
+function showMpFinal() {
+  const totals  = mpPlayers.map(p => p.scores.reduce((a, b) => a + b, 0));
+  const diff    = totals[0] - totals[1];
+  const tie     = Math.abs(diff) < 0.005;
+  const winIdx  = tie ? -1 : (diff > 0 ? 0 : 1);
+
+  // Winner banner
+  const winEl = document.getElementById('mp-final-winner');
+  winEl.innerHTML = tie
+    ? `It's a <span>tie!</span>`
+    : `<span>${mpPlayers[winIdx].name}</span> wins!`;
+
+  // Build both player cards
+  [0, 1].forEach(i => {
+    const p     = mpPlayers[i];
+    const total = totals[i];
+    const card  = document.getElementById(`mp-fc-${i}`);
+
+    card.querySelector('.mp-fc-name').textContent = p.name;
+
+    const [si, sd] = total.toFixed(2).split('.');
+    card.querySelector('.mp-fc-score').innerHTML =
+      `${si}.${sd}<span class="mp-fc-denom">/50</span>`;
+
+    buildMpTiles(card.querySelector('.mp-fc-tiles'), p);
+    card.classList.toggle('winner', i === winIdx);
+  });
+
+  if (window.innerWidth > 768) document.getElementById('game-container').style.height = '430px';
+  showScreen('mp-final-screen');
+}
+
+document.getElementById('mp-final-close').addEventListener('click', () => {
+  document.getElementById('mp-p1-input').value = '';
+  document.getElementById('mp-p2-input').value = '';
+  showIntro();
+});
+
+document.getElementById('mp-final-again').addEventListener('click', () => {
+  document.getElementById('mp-p1-input').value = '';
+  document.getElementById('mp-p2-input').value = '';
+  showIntro();
+});
+
+document.getElementById('mp-final-share').addEventListener('click', () => {
+  openShareModal();
+});
+
+// ── Multiplayer share canvas (2-player layout) ────
+function generateMpShareCanvas() {
+  const SZ   = 600;
+  const canvas = document.getElementById('share-canvas');
+  canvas.width  = SZ;
+  canvas.height = SZ;
+  const ctx  = canvas.getContext('2d');
+  const FONT = '-apple-system, "Inter", system-ui, sans-serif';
+
+  // Background
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0, 0, SZ, SZ);
+
+  // Grid texture
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < SZ; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, SZ); ctx.stroke(); }
+  for (let y = 0; y < SZ; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(SZ, y); ctx.stroke(); }
+
+  // Branding
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = `600 15px ${FONT}`;
+  ctx.fillText('DoppleHue', 32, 46);
+
+  // Mode pill
+  const modeLabel2 = easyMode ? 'Easy' : 'Hard';
+  ctx.font = `600 12px ${FONT}`;
+  const pillW = ctx.measureText(modeLabel2).width + 22;
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  rrect(ctx, SZ - pillW - 24, 30, pillW, 24, 12);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.fillText(modeLabel2, SZ - pillW - 13, 46);
+
+  // Divider line (vertical centre)
+  const MID = SZ / 2;
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(MID, 70); ctx.lineTo(MID, SZ - 24); ctx.stroke();
+
+  const totals  = mpPlayers.map(p => p.scores.reduce((a, b) => a + b, 0));
+  const diff    = totals[0] - totals[1];
+  const tie     = Math.abs(diff) < 0.005;
+  const winIdx  = tie ? -1 : (diff > 0 ? 0 : 1);
+
+  // Draw each player column
+  const colW = MID - 8;
+  [0, 1].forEach(i => {
+    const p      = mpPlayers[i];
+    const total  = totals[i];
+    const ox     = i === 0 ? 32 : MID + 8;   // column x origin
+    const isWin  = i === winIdx;
+
+    // Winner crown indicator
+    if (isWin) {
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      rrect(ctx, ox, 68, colW - 16, 20, 10);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = `600 11px ${FONT}`;
+      ctx.fillText('WINNER', ox + 10, 82);
+    }
+
+    // Name
+    const nameY = isWin ? 116 : 96;
+    ctx.fillStyle = isWin ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.3)';
+    ctx.font = `600 12px ${FONT}`;
+    ctx.fillText(p.name.toUpperCase().slice(0, 14), ox, nameY);
+
+    // Score
+    const [si, sd] = total.toFixed(2).split('.');
+    ctx.fillStyle = '#fff';
+    ctx.font = `400 64px ${FONT}`;
+    const scoreStr = `${si}.${sd}`;
+    const scoreW   = ctx.measureText(scoreStr).width;
+    ctx.fillText(scoreStr, ox, nameY + 72);
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.font = `400 26px ${FONT}`;
+    ctx.fillText('/50', ox + scoreW + 3, nameY + 72);
+
+    // Colour tiles (5 tiles)
+    const TILE_TOP = nameY + 88;
+    const TILE_H   = 160;
+    const GAP      = 4;
+    const TILES_W  = colW - 16;
+    const TW       = (TILES_W - GAP * 4) / 5;
+
+    p.colors.forEach((rc, j) => {
+      const tx = ox + j * (TW + GAP);
+      ctx.save();
+      rrect(ctx, tx, TILE_TOP, TW, TILE_H, 8);
+      ctx.clip();
+      ctx.fillStyle = hsbToCss(rc.picked.h, rc.picked.s, rc.picked.b);
+      ctx.beginPath(); ctx.moveTo(tx, TILE_TOP); ctx.lineTo(tx + TW, TILE_TOP); ctx.lineTo(tx, TILE_TOP + TILE_H); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = hsbToCss(rc.target.h, rc.target.s, rc.target.b);
+      ctx.beginPath(); ctx.moveTo(tx + TW, TILE_TOP); ctx.lineTo(tx + TW, TILE_TOP + TILE_H); ctx.lineTo(tx, TILE_TOP + TILE_H); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      // Round score
+      const sc = p.scores[j].toFixed(1);
+      ctx.font = `700 10px ${FONT}`;
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillText(sc, tx + 4, TILE_TOP + 14);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(sc, tx + 3, TILE_TOP + 13);
+    });
+  });
+
+  // Bottom CTA
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.font = `500 13px ${FONT}`;
+  ctx.textAlign = 'center';
+  ctx.fillText('Can you beat us?', SZ / 2, SZ - 30);
+  ctx.textAlign = 'left';
+}
 </script>
 </body>
 </html>
