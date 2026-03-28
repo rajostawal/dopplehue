@@ -378,7 +378,7 @@
       transition: color 0.15s;
       color: #fff;
     }
-    #picker-round { left: 30px; }
+    #picker-round { left: 143px; }
 
     #picker-info {
       opacity: 0;
@@ -865,6 +865,7 @@
       .strip:last-child { border-bottom: none; }
       #picker-label, #picker-values { display: none; }
       #picker-screen .go-btn { bottom: 112px; }
+      #picker-round { left: 30px; }
     }
   </style>
 </head>
@@ -1071,6 +1072,13 @@ const TOTAL_ROUNDS   = 5;
 const TIMER_EASY     = 5;     // seconds
 const TIMER_HARD     = 2;
 const COUNTDOWN_WORD_DUR = 700;  // ms each word (ready/set/go) stays visible
+
+// ── Global Leaderboard (Firebase Realtime Database) ──────────────────────────
+// 1. Go to console.firebase.google.com → create a project
+// 2. Build → Realtime Database → Create database → Start in test mode
+// 3. Copy your database URL below (looks like https://YOUR-ID-default-rtdb.firebaseio.com)
+const FIREBASE_DB_URL = 'https://dopplehue-default-rtdb.firebaseio.com';
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ════════════════════════════════════════════════════
 //  STATE
@@ -1518,14 +1526,20 @@ document.getElementById('total-initials-btn').addEventListener('click', () => {
   }
 });
 
-document.getElementById('total-post-btn').addEventListener('click', () => {
+document.getElementById('total-post-btn').addEventListener('click', async () => {
   const total = roundScores.reduce((a, b) => a + b, 0);
   const tab = easyMode ? 'easy' : 'hard';
+  const entry = { initials: playerInitials, score: parseFloat(total.toFixed(2)), ts: Date.now() };
+
+  // Also persist locally as fallback / "my score" highlight
   const key = `lb-scores-${tab}`;
   let existing = [];
   try { existing = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
-  existing.push({ initials: playerInitials, score: parseFloat(total.toFixed(2)), user: true });
+  existing.push({ ...entry, user: true });
   localStorage.setItem(key, JSON.stringify(existing));
+
+  // Post to global Firebase leaderboard (non-blocking — open modal right away)
+  postScoreGlobal(tab, entry);
   openShareModal(total);
 });
 
@@ -1659,9 +1673,42 @@ document.getElementById('share-copy').addEventListener('click', () => {
 });
 
 // ════════════════════════════════════════════════════
+//  FIREBASE HELPERS
+// ════════════════════════════════════════════════════
+async function postScoreGlobal(tab, entry) {
+  if (!FIREBASE_DB_URL) return;
+  try {
+    await fetch(`${FIREBASE_DB_URL}/scores/${tab}.json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    });
+  } catch(e) { console.warn('DoppleHue: could not post score', e); }
+}
+
+async function fetchGlobalScores(tab) {
+  if (!FIREBASE_DB_URL) return null;
+  try {
+    const res = await fetch(`${FIREBASE_DB_URL}/scores/${tab}.json`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data) return [];
+    return Object.values(data);
+  } catch(e) {
+    console.warn('DoppleHue: could not fetch scores', e);
+    return null;
+  }
+}
+
+// ════════════════════════════════════════════════════
 //  LEADERBOARD
 // ════════════════════════════════════════════════════
-function getLbEntries(tab) {
+async function getLbEntries(tab) {
+  const global = await fetchGlobalScores(tab);
+  if (global !== null) {
+    return global.sort((a, b) => b.score - a.score);
+  }
+  // Fallback: device-local scores
   const key = `lb-scores-${tab}`;
   let scores = [];
   try { scores = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
@@ -1671,11 +1718,22 @@ function getLbEntries(tab) {
 
 let lbCurrentTab = 'easy';
 
-function renderLeaderboard(tab) {
+async function renderLeaderboard(tab) {
   lbCurrentTab = tab;
-  const entries = getLbEntries(tab);
   const listEl = document.getElementById('lb-list');
   const subtitleEl = document.getElementById('lb-subtitle');
+
+  // Show loading state while fetching
+  subtitleEl.textContent = 'Loading scores…';
+  listEl.innerHTML = '';
+
+  // Update tab UI immediately
+  document.querySelectorAll('.lb-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+
+  const entries = await getLbEntries(tab);
+
   subtitleEl.textContent = entries.length === 0
     ? 'No scores yet — be the first!'
     : `${entries.length} score${entries.length === 1 ? '' : 's'} submitted`;
@@ -1692,7 +1750,7 @@ function renderLeaderboard(tab) {
     const e = entries[i];
     const tied = i > 0 && entries[i-1].score === e.score;
     const row = document.createElement('div');
-    row.className = 'lb-row' + (e.user ? ' current-user' : '');
+    row.className = 'lb-row' + (e.user || e.initials === playerInitials ? ' current-user' : '');
     const rankCol = document.createElement('div');
     rankCol.className = 'lb-rank-col';
     if (!tied) {
@@ -1714,11 +1772,6 @@ function renderLeaderboard(tab) {
     listEl.appendChild(row);
     if (!tied) rank = i + 2;
   }
-
-  // Update tab UI
-  document.querySelectorAll('.lb-tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.tab === tab);
-  });
 }
 
 document.getElementById('intro-lb-btn').addEventListener('click', () => {
