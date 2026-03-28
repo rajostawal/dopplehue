@@ -378,7 +378,7 @@
       transition: color 0.15s;
       color: #fff;
     }
-    #picker-round { left: 143px; }
+    #picker-round { left: 30px; }
 
     #picker-info {
       opacity: 0;
@@ -1533,31 +1533,126 @@ document.getElementById('total-post-btn').addEventListener('click', () => {
 //  SHARE MODAL
 // ════════════════════════════════════════════════════
 let shareTotal = 0;
-function openShareModal(total) {
+let shareBlob  = null;
+
+function rrClip(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath(); ctx.clip();
+}
+
+function generateScoreCanvas() {
+  const DPR=2, W=480, H=320;
+  const cv=document.createElement('canvas');
+  cv.width=W*DPR; cv.height=H*DPR;
+  const ctx=cv.getContext('2d');
+  ctx.scale(DPR,DPR);
+
+  const total = roundScores.reduce((a,b)=>a+b,0);
+  const font  = '500 13px -apple-system,BlinkMacSystemFont,system-ui,sans-serif';
+  const fontB = '600 13px -apple-system,BlinkMacSystemFont,system-ui,sans-serif';
+
+  // Background
+  ctx.save(); rrClip(ctx,0,0,W,H,16);
+  ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H);
+
+  // Percentile row
+  ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.font=font;
+  const pctParts = `Top ${calcPercentile(total)} of all players`;
+  ctx.fillText(pctParts,22,38);
+
+  // Big score
+  ctx.fillStyle='#fff'; ctx.font=`500 68px -apple-system,BlinkMacSystemFont,system-ui,sans-serif`;
+  const scoreStr=total.toFixed(2);
+  const sw=ctx.measureText(scoreStr).width;
+  ctx.fillText(scoreStr,22,108);
+  ctx.fillStyle='rgba(255,255,255,0.22)'; ctx.font=`500 38px -apple-system,BlinkMacSystemFont,system-ui,sans-serif`;
+  ctx.fillText('/50',22+sw+6,106);
+
+  // Description
+  ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.font=font;
+  ctx.fillText(totalFeedback(total),22,136);
+
+  // Tiles
+  const n=roundColors.length, gap=5;
+  const tW=(W-44-gap*(n-1))/n, tH=70, tY=H-86;
+  roundColors.forEach((rc,i)=>{
+    const tx=22+i*(tW+gap);
+    const [pr,pg,pb]=hsbToRgb(rc.picked.h,rc.picked.s,rc.picked.b);
+    const [tr,tg,tb]=hsbToRgb(rc.target.h,rc.target.s,rc.target.b);
+    ctx.save(); rrClip(ctx,tx,tY,tW,tH,7);
+    ctx.fillStyle=`rgb(${pr},${pg},${pb})`;
+    ctx.beginPath(); ctx.moveTo(tx,tY); ctx.lineTo(tx+tW,tY); ctx.lineTo(tx,tY+tH); ctx.fill();
+    ctx.fillStyle=`rgb(${tr},${tg},${tb})`;
+    ctx.beginPath(); ctx.moveTo(tx+tW,tY); ctx.lineTo(tx+tW,tY+tH); ctx.lineTo(tx,tY+tH); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle='#fff'; ctx.font=fontB;
+    ctx.shadowColor='rgba(0,0,0,0.5)'; ctx.shadowBlur=3;
+    ctx.fillText(roundScores[i].toFixed(2),tx+5,tY+15);
+    ctx.shadowBlur=0; ctx.shadowColor='transparent';
+  });
+
+  // Branding
+  ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.font=`600 11px -apple-system,BlinkMacSystemFont,system-ui,sans-serif`;
+  ctx.fillText('dopplehue.com',22,H-12);
+  ctx.restore();
+
+  return cv;
+}
+
+async function openShareModal(total) {
   shareTotal = total;
+  // Generate score image in background
+  shareBlob = null;
+  try {
+    const cv = generateScoreCanvas();
+    shareBlob = await new Promise(r => cv.toBlob(r,'image/png'));
+  } catch(e) {}
+
+  // Show native share if browser supports it
   if (navigator.share) document.getElementById('share-native').style.display = 'flex';
   document.getElementById('share-modal').classList.add('open');
 }
+
 function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
+
 function buildShareText(total) {
   return `I scored ${total.toFixed(2)}/50 on DoppleHue (${easyMode?'Easy':'Hard'} mode). Can you beat me? dopplehue.com`;
 }
+
 document.getElementById('share-cancel').addEventListener('click', closeShareModal);
-document.getElementById('share-modal').addEventListener('click', e => { if(e.target===document.getElementById('share-modal')) closeShareModal(); });
+document.getElementById('share-modal').addEventListener('click', e => {
+  if (e.target===document.getElementById('share-modal')) closeShareModal();
+});
+
 document.getElementById('share-whatsapp').addEventListener('click', () => {
   window.open(`https://wa.me/?text=${encodeURIComponent(buildShareText(shareTotal))}`, '_blank');
   closeShareModal();
 });
+
 document.getElementById('share-twitter').addEventListener('click', () => {
   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(buildShareText(shareTotal))}`, '_blank');
   closeShareModal();
 });
+
 document.getElementById('share-native').addEventListener('click', async () => {
-  try { await navigator.share({ title:'DoppleHue', text:buildShareText(shareTotal), url:'https://dopplehue.com' }); closeShareModal(); } catch(e){}
+  try {
+    const shareData = { title:'DoppleHue', text:buildShareText(shareTotal), url:'https://dopplehue.com' };
+    if (shareBlob) {
+      const file = new File([shareBlob],'dopplehue-score.png',{type:'image/png'});
+      if (navigator.canShare && navigator.canShare({files:[file]})) shareData.files = [file];
+    }
+    await navigator.share(shareData);
+    closeShareModal();
+  } catch(e) {}
 });
+
 document.getElementById('share-copy').addEventListener('click', () => {
   const text = buildShareText(shareTotal);
-  const lbl = document.getElementById('share-copy-label');
+  const lbl  = document.getElementById('share-copy-label');
   (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
     .catch(() => { const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); return Promise.resolve(); })
     .then(() => { lbl.textContent='Copied!'; setTimeout(()=>lbl.textContent='Copy link',2000); });
